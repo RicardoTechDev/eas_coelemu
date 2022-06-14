@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'eas_coelemu_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,3 +122,24 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'dideco.coelemu@outlook.com'
+EMAIL_HOST_PASSWORD = 'dideco007*'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+'''
+https://mailtrap.io/
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '872108332c9c7d'
+EMAIL_HOST_PASSWORD = 'b20c5da347f9c3'
+EMAIL_PORT = '2525'
+'''

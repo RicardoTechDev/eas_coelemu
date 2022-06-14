@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro usuario administrador</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'AdminLTE/css/all.min.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'AdminLTE/css/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'AdminLTE/css/adminlte.min.css' %}">
+  <!-- Toastr style -->
+  <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+</head>
+<body class="hold-transition register-page">
+<div class="register-box">
+  <div class="register-logo">
+    <img class="" src="{% static 'img/escudo.png' %}" alt="Municipalidad de Coelemu" width="70">
+  </div>
+
+  <div class="card">
+    <div class="card-body register-card-body">
+      <p class="login-box-msg">Registrar usuario administrador</p>
+
+      <form action="{% url 'config' %}" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Nombres" id="registro_nombres" name="registro_nombres">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Apellido paterno" id="registro_ap_paterno" name="registro_ap_paterno">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Apellido materno" id="registro_ap_materno" name="registro_ap_materno">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Ingrese RUT sin puntos y con guión" id="registro_rut" name="registro_rut">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fa fa-id-card"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Celular" id="registro_celular" name="registro_celular">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fa fa-mobile"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" placeholder="Email" id="registro_email" name="registro_email">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Contraseña" id="registro_contrasena" name="registro_contrasena">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Repetir contraseña" id="registro_contrasena_confirm" name="registro_contrasena_confirm">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+<!-- /.register-box -->
+
+<!-- jQuery -->
+<script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+<script src="{% static 'AdminLTE/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'AdminLTE/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'AdminLTE/js/adminlte.js' %}"></script>
+<!-- toastr para los mesajes de error -->
+<script src="{% static 'js/toastr.min.js' %}"></script>
+
+<script>
+        $(document).ready(function(){
+              toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                        }
+              {% if messages %}
+                  {% for message in messages %}
+                      {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} /* otra opci�n pueder ser: message.tags == 'success' */
+                              Swal.fire({
+                              icon: 'success',
+                              title: '{{message}}',
+                              showClass: {
+                                  popup: 'animate__animated animate__fadeInDown'
+                              },
+                              hideClass: {
+                                  popup: 'animate__animated animate__fadeOutUp'
+                              }
+                              });                        
+                      {% else %}
+                          toastr.{{ message.tags }}("{{message}}");
+
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+        });
+</script>
+</body>
+</html>

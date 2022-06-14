@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Nuevo ususario{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Editar Perfil{% endblock %}
+{% block content_header_actual%} Editar Perfil{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-warning">
+                    <div class="card-header p-2">
+                        <h6>Datos usuario</h6>
+                    </div><!-- /.card-header -->
+                    <div class="card-body container-fluid">
+                        <form class="mt-3" action="{% url 'editarPerfil' usuario.id %}" method="POST" id="form_editar_usuario" enctype="multipart/form-data"> 
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-4 mx-auto">
+                                    <!-- Profile Image -->
+                                    <div class="form-group text-center">
+                                    <div class="input-group">
+                                        <div id="add-photo" data-toggle="tooltip" data-placement="bottom" title="Subir foto">
+                                            <img src="{% static 'img/subir_foto_usuario.png' %}"  class="img-fluid crop" alt="Subir foto" id="foto" width="75%">
+                                        </div>
+                                        <input type="file" name="editar_imagen" id="editar_imagen" style="display:none;">
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="editar_nombres" class="col-sm-3 col-form-label">Nombres</label>
+                                        <input type="text" class="form-control" placeholder="Nombres" id="editar_nombres" name="editar_nombres" value="{{ usuario.nombres }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="editar_ap_paterno" class="col-sm-3 col-form-label">Apellido paterno</label>
+                                        <input type="text" class="form-control" placeholder="Apellido paterno" id="editar_ap_paterno" name="editar_ap_paterno" value="{{ usuario.apellido_paterno }}" >
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="editar_ap_materno" class="col-sm-3 col-form-label">Apellido materno</label>
+                                        <input type="text" class="form-control" placeholder="Apellido materno" id="editar_ap_materno" name="editar_ap_materno" value="{{ usuario.apellido_materno }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="editar_rut" class="col-sm-3 col-form-label">RUT</label>
+                                        <input type="text" class="form-control" placeholder="11111111-1" id="editar_rut" name="editar_rut" value="{{ usuario.rut }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-id-card"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="editar_celular" class="col-sm-3 col-form-label">Celular</label>
+                                        <input type="text" class="form-control" placeholder="Celular" id="editar_celular" name="editar_celular" value="{{ usuario.celular }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-mobile"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="editar_email" class="col-sm-3 col-form-label">Email</label>
+                                        <input type="email" class="form-control" placeholder="Email" id="editar_email" name="editar_email" value="{{ usuario.email }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-envelope"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3 float-right">
+                                        <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+                
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+    //$(function () {bsCustomFileInput.init();});
+    $("#add-photo").tooltip()//para el mesaje de subir foto
+
+    function createPreview(file) {
+    var imgCodified = URL.createObjectURL(file);
+    $("#foto").attr("src",imgCodified);
+    $("#foto").attr("class","img-fluid rounded-circle");
+}
+
+    // Abrir el inspector de archivos
+    $(document).on("click", "#add-photo", function(){
+        $("#editar_imagen").click();
+    });
+
+     // Cachamos el evento change
+    $(document).on("change", "#editar_imagen", function () {
+        console.log(this.files);
+        var files = this.files;
+        var element;
+        var supportedImages = ["image/jpeg", "image/png", "image/gif"];
+        var seEncontraronElementoNoValidos = false;
+
+        for (var i = 0; i < files.length; i++) {
+            element = files[i];
+            if (supportedImages.indexOf(element.type) != -1) {createPreview(element);}
+            else {seEncontraronElementoNoValidos = true;}
+        }
+        if (seEncontraronElementoNoValidos) {toastr.error("Archivo de imagen no valido");}
+        else {toastr.success("Archivo de imagen subido correctamente");}
+    });
+</script>
+{% endblock %}

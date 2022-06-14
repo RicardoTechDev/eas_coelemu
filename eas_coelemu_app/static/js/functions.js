@@ -1,0 +1,1 @@
+//Genera las previsualizaciones

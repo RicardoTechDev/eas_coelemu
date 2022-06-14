@@ -1,0 +1,9 @@
+/*Inicio para la foto de usuario*/
+#foto{
+    cursor: pointer;
+    transition: transform .2s; /* Animation */
+}
+#foto:hover{
+    transform: scale(1.1);
+}
+/*Fin para la foto de usuario*/
