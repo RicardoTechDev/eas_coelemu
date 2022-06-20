@@ -1,10 +1,11 @@
+#$ python -m pip freeze
 from multiprocessing import context
 from re import template
 from django.conf import Settings
 from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from eas_coelemu_app.models import Usuario, Rol
+from eas_coelemu_app.models import PrecioGas, Usuario, Rol, DescuentoAplicable, CantidadConvenio
 from eas_coelemu_app.decorators import loginRequired
 from eas_coelemu_app.functions import *
 #para en envío de correos
@@ -16,6 +17,8 @@ import bcrypt
 import random as rd
 import string
 from typing import List
+import datetime
+import re
 
 def config(request):
     usuario = ''
@@ -65,8 +68,9 @@ def config(request):
             #delsession(request)#vaciamos las variables de sesión del registro
             registro_admin_rut = formRut(request.POST['registro_rut'])
             #encriptación de la contraseña ingresada por el usuario
-            password_encryp = bcrypt.hashpw(request.POST['registro_contrasena'].encode(), bcrypt.gensalt()).decode()
-
+            new_password = crearPass()
+            password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+            
             new_user = Usuario.objects.create(
                                             nombres = request.POST['registro_nombres'],
                                             apellido_paterno = request.POST['registro_ap_paterno'],
@@ -81,14 +85,17 @@ def config(request):
                                             estado= 1
                                             )
             
-            request.session['usuario'] = {
-                                            "id" : new_user.id,
-                                            "name" : f"{new_user}",
-                                            "email" : new_user.email,
-                                            "rol" : new_user.rol.nombre
-                                        }
+            usuario_logueado = {
+                                "id" : new_user.id,
+                                "nombre" : f"{new_user}", # usamos el "def __str__(self)" definido en el modelo con return f"{self.firstname} {self.lastname}"
+                                "email" : new_user.email,
+                                "rol" : new_user.rol.nombre
+                            }
+
+            request.session['usuario'] = usuario_logueado
             
-            messages.success(request, f'Se realizado el registro del administrador con exito.')
+            messages.success(request, f'Se a realizado el registro del administrador con exito. Hemos enviado una contraseña temporal al correo { new_user.email }')
+            sendWelcomeMail(new_user, new_password)
             return redirect("/home") 
 
     else: #metodo GET
@@ -148,7 +155,7 @@ def login(request):
 
         return render(request, 'index.html')
 
-
+@loginRequired
 def logout(request):
     if 'usuario' in request.session:
         del request.session['usuario']  
@@ -163,7 +170,8 @@ def home(request):
     if request.session['usuario']['rol'] == 'Administrador':
         context = {
             'usuarios' : Usuario.objects.all(),
-            'cant_usuarios' : Usuario.objects.all().count()
+            'cant_usuarios' : Usuario.objects.all().count(),
+            'precio_gas' : PrecioGas.objects.get(estado=1),
         }
         return render(request, 'admin/home.html', context)
 
@@ -223,14 +231,7 @@ def nuevoUsuario(request):
                                             rol = Rol.objects.get(id=request.POST['registro_rol']),
                                             estado= 1
                                             )
-            
-            request.session['usuario'] = {
-                                            "id" : new_user.id,
-                                            "name" : f"{new_user}",
-                                            "email" : new_user.email,
-                                            "rol" : new_user.rol.nombre
-                                        }
-            
+                        
             messages.success(request, f"Nuevo usuario registrado con exito.")
             sendWelcomeMail(new_user, new_password)
 
@@ -255,6 +256,9 @@ def cambiarEstadoUsuario(request, id_user):
 
 
 def editarUsuario(request, id_user):
+    if 'usuario' not in request.session:
+        return redirect('error404')
+
     usuario = Usuario.objects.get(id=id_user)
     roles = Rol.objects.all()
     if request.method == 'GET':
@@ -279,7 +283,11 @@ def editarUsuario(request, id_user):
     return redirect(usuarios)
 
 
+
 def editarPerfil(request, id_user):
+    if 'usuario' not in request.session:
+        return redirect('error404')
+
     usuario = Usuario.objects.get(id=id_user)
     if request.method == 'GET':
         context = {
@@ -299,8 +307,195 @@ def editarPerfil(request, id_user):
     return redirect("home")
 
 
+
+@loginRequired
+def precioGas(request):
+    precio = PrecioGas.objects.get(estado=1)
+    context = {
+            'precio_gas' : precio,     
+    }
+
+    return render(request, 'admin/configuracion/precio_gas.html', context)
+
+
+@loginRequired
+def nuevoPrecio(request):
+    precio_actual = 0
+    if(PrecioGas.objects.all()):
+        precio_actual = PrecioGas.objects.get(estado=1)
+
+    if request.method == 'GET':
+        context = {
+                'fecha': datetime.date.today(),
+                'precio_actual': precio_actual
+                }
+        return render(request, 'admin/configuracion/nuevo_precio_gas.html', context)
+
+    elif request.method == 'POST':
+        errors = PrecioGas.objects.validador_basico(request.POST)
+        
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(nuevoPrecio)
+        
+        else:
+            precio = quitarMiles(request.POST['nuevo_precio'])
+            if(not PrecioGas.objects.all()):
+                usuario = Usuario.objects.get(id=request.session['usuario']['id'])
+                nuevo_precio = PrecioGas.objects.create(
+                                                precio = precio,
+                                                usuario = usuario,
+                                                estado = 1
+                                                )            
+                messages.success(request, f"Nuevo precio registrado con exito.")
+
+            else:
+                precio_vigente = PrecioGas.objects.get(estado=1)
+                precio_vigente.precio = precio
+                precio_vigente.usuario = Usuario.objects.get(id=request.session['usuario']['id'])
+                precio_vigente.save()
+                messages.success(request, f"Precio actualizado con exito.") 
+
+            
+        return redirect(precioGas)
+
+
+@loginRequired
+def descuentoAplicable(request):
+    descuentos = DescuentoAplicable.objects.all()
+    context = {
+            'descuentos' : descuentos,     
+    }
+
+    return render(request, 'admin/configuracion/descuento_aplicable.html', context)
+
+
+@loginRequired
+def nuevoDescuento(request):
+    if request.method == 'GET':
+        return render(request, 'admin/configuracion/nuevo_descuento.html')
+
+    elif request.method == 'POST':
+        errors = DescuentoAplicable.objects.validador_basico(request.POST)
+        
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(nuevoDescuento)
+        
+        else:
+            usuario = Usuario.objects.get(id=request.session['usuario']['id'])
+            nuevo_descuento = DescuentoAplicable.objects.create(
+                                            calificacion_base = request.POST['descuento_base'],
+                                            calificacion_tope = request.POST['descuento_tope'],
+                                            descuento = request.POST['descuento_porcentaje'],
+                                            usuario = usuario
+                                            )            
+            messages.success(request, f"Nuevo descuento registrado con exito.")
+            
+    return redirect(descuentoAplicable)
+
+
+
+def editarDescuento(request, id_descuento):
+    if 'usuario' not in request.session:
+        return redirect('error404')
+
+    descuento = DescuentoAplicable.objects.get(id=id_descuento)
+    if request.method == 'GET':
+        context = {
+                'descuento': descuento
+                }
+        return render(request, 'admin/configuracion/editar_descuento.html', context)
+
+    elif request.method == 'POST':
+        errors = DescuentoAplicable.objects.validador_basico(request.POST)
+        
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(editarDescuento, descuento.id)
+        
+        else:
+            descuento.calificacion_base = request.POST['descuento_base']
+            descuento.calificacion_tope = request.POST['descuento_tope']
+            descuento.descuento = request.POST['descuento_porcentaje']
+            descuento.save()
+            messages.success(request, f"Descuento actualizado con exito.")
+
+    return redirect('descuentoAplicable')
+
+
+
+def eliminarDescuento(request, id_descuento):
+    if 'usuario' not in request.session:
+            return redirect('error404')
+
+    descuento = DescuentoAplicable.objects.get(id=id_descuento)
+    descuento.delete()
+
+    return redirect(descuentoAplicable)
+
+
+@loginRequired
+def cantConvenios(request):
+    cant_convenios = CantidadConvenio.objects.get(estado=1)
+    context = {
+            'cant_convenios' : cant_convenios,     
+            'hola' : 'holaaaaa'
+    }
+
+    return render(request, 'admin/configuracion/cantidad_convenios.html', context)
+
+
+
+@loginRequired 
+def nuevoCantConvenios(request):
+    cantidad_actual = 0
+    if request.method == 'GET':
+        if(CantidadConvenio.objects.all()):
+            cantidad_actual = CantidadConvenio.objects.get(estado=1)
+
+        context = {
+                'fecha': datetime.date.today(),
+                'cantidad_actual':cantidad_actual
+                }
+        return render(request, 'admin/configuracion/nuevo_cantidad_convenios.html', context)
+
+    elif request.method == 'POST':
+        errors = CantidadConvenio.objects.validador_basico(request.POST)
+        
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(nuevoCantConvenios)
+        
+        else:
+            if(not CantidadConvenio.objects.all()):#si no exiten
+                usuario = Usuario.objects.get(id=request.session['usuario']['id'])
+                nueva_cantidad = CantidadConvenio.objects.create(
+                                                                cantidad_convenios = request.POST['cant_convenios'],
+                                                                usuario = usuario,
+                                                                estado = 1
+                                                                )            
+                messages.success(request, f"Nueva cantidad de convenios registrada con exito.")
+
+            else:
+                cantidad_vigente = CantidadConvenio.objects.get(estado=1)
+                cantidad_vigente.cantidad_convenios = request.POST['cant_convenios']
+                cantidad_vigente.usuario = Usuario.objects.get(id=request.session['usuario']['id'])
+                cantidad_vigente.save()
+                messages.success(request, f"Cantidad de convenios actualizada con exito.") 
+
+            
+        return redirect(cantConvenios)
+
+
+
 def error404(request):
     return render(request, '404.html')
+
 
 
 def crearPass():
@@ -310,6 +505,9 @@ def crearPass():
 
     return contrasena
 
+def quitarMiles(numero):
+    numero = re.sub("\.","",numero)
+    return int(numero)
 
 def sendWelcomeMail(user, password):
     

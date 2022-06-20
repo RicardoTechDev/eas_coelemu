@@ -7,6 +7,21 @@
 {% block content_header_actual%} Editar Perfil{% endblock %}
 <!-- Main content -->
 {% block content_main %}
+<div class="row mb-3 ml-1">
+    <!-- Button trigger modal -->
+    <a href="#">
+        <button type="button" class="btn bg-gradient-primary">
+            <i class='fas fa-dollar-sign'></i>
+            Editar Datos
+        </button>
+    </a>
+    <a href="#">
+        <button type="button" class="btn bg-gradient-primary ml-1"">
+            <i class='fas fa-dollar-sign'></i>
+            Cambiar Contraseña
+        </button>
+    </a>
+</div>
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -24,7 +39,7 @@
                                     <!-- Profile Image -->
                                     <div class="form-group text-center">
                                     <div class="input-group">
-                                        <div id="add-photo" data-toggle="tooltip" data-placement="bottom" title="Subir foto">
+                                        <div id="add-photo" data-toggle="tooltip" data-placement="bottom" title="Actualizar foto">
                                             <img src="{% static 'img/subir_foto_usuario.png' %}"  class="img-fluid crop" alt="Subir foto" id="foto" width="75%">
                                         </div>
                                         <input type="file" name="editar_imagen" id="editar_imagen" style="display:none;">
@@ -61,7 +76,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="editar_rut" class="col-sm-3 col-form-label">RUT</label>
-                                        <input type="text" class="form-control" placeholder="11111111-1" id="editar_rut" name="editar_rut" value="{{ usuario.rut }}" readonly>
+                                        <input type="text" class="form-control" placeholder="11111111-1" id="editar_rut" name="editar_rut" value="{{ usuario.rut }}-{{ usuario.dv}}" readonly>
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-id-card"></span>

@@ -7,7 +7,7 @@
 {% block content_header_actual%}usuarios{% endblock %}
 <!-- Main content -->
 {% block content_main %}
-    <div class="row mb-3">
+    <div class="row mb-3 ml-1">
         <!-- Button trigger modal -->
         <a href="{% url 'nuevoUsuario' %}">
             <button type="button" class="btn bg-gradient-primary">
@@ -68,4 +68,7 @@
         </tbody>
     </table>
     <!-- ./Tabla de usuarios -->
+{% endblock %}
+{% block scripts %}
+
 {% endblock %}

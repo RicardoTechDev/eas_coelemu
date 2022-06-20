@@ -39,7 +39,7 @@ class UsuarioManager(models.Manager):
 
     def validador_basico(self, postData):
         EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
-        SOLO_LETRAS = re.compile(r'^[a-zA-Z. ]+$')
+        SOLO_LETRAS = re.compile(r'^[a-zA-Z. ]+$')  
 
         errors = {}
 
@@ -76,6 +76,96 @@ class UsuarioManager(models.Manager):
 
         return errors
 
+
+
+class PrecioGasManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        if len(postData['nuevo_precio']) == 0:
+            errors['nuevo_precio_len'] = "El precio no puede estar vacio."
+
+        if postData['nuevo_precio']:
+            try:
+                valor = float(postData['nuevo_precio'])#solo lo usamos para atrapar en error
+            except Exception as e:
+                errors['nuevo_precio_no_numero'] = "Solo puede ingresar números."
+
+        return errors
+
+
+class DescuentoAplicableManager(models.Manager):
+    def validador_basico(self, postData):
+        SOLO_NUMEROS = re.compile(r'^[0-9.]+$')  
+
+        errors = {}
+        #errores calificación base
+        if postData['descuento_base']:
+            try:
+                if int(postData['descuento_base']) > 100:
+                    errors['descuento_base_cien'] = "El porcentaje base no puede ser mayor a 100." 
+
+                if int(postData['descuento_base']) > int(postData['descuento_tope']):
+                    errors['base_mayor_tope'] = "El porcentaje base no puede ser mayor al tope."
+                
+                if postData['descuento_base'] == postData['descuento_tope']:
+                    errors['base_mayor_tope'] = "El porcentaje base no puede ser mayor al tope."
+
+            except Exception as e:
+                errors['descuento_base_numero_entero'] = "Debe ingresar solo números enteros en Calificación base."
+        
+        if len(postData['descuento_base']) == 0:
+            errors['descuento_base_len'] = "Debe ingresar el porcentaje base."
+
+        #errores calificación tope
+        if postData['descuento_tope']:
+            try:
+                if int(postData['descuento_tope']) > 100:
+                    errors['descuento_tope_cien'] = "El porcentaje tope no puede ser mayor a 100." 
+                
+                if postData['descuento_tope'] == '0':
+                    errors['descuento_tope_cero'] = "El porcentaje tope no puede ser cero." 
+
+                #if not SOLO_NUMEROS.match(postData['descuento_tope']):
+                #   errors['descuento_tope_numero'] = "Debe ingresar solo números en Calificación tope."
+
+            except Exception as e:
+                errors['descuento_tope_numero_entero'] = "Debe ingresar solo números enteros en Calificación tope."
+
+        if len(postData['descuento_tope']) == 0:
+            errors['descuento_tope_len'] = "Debe ingresar el porcentaje tope." 
+
+        #errores calificación porcentaje descuento
+        if postData['descuento_porcentaje']:
+            try:
+                if int(postData['descuento_porcentaje']) > 100:
+                    errors['descuento_porcentaje_cero'] = "El porcentaje de descuento no puede ser mayor a 100." 
+            except Exception as e:
+                errors['descuento_porcentaje_entero'] = "Debe ingresar solo números enteros en Descuento aplicable."
+
+        if len(postData['descuento_porcentaje']) == 0:
+            errors['descuento_porcentaje_len'] = "Debe ingresar el porcentaje de descuento."
+
+        return errors
+
+
+class CantidadConvenioManager(models.Manager):
+    def validador_basico(self, postData):
+        SOLO_NUMEROS = re.compile(r'^[0-9.]+$')  
+
+        errors = {}
+        #errores calificación base
+        if postData['cant_convenios']:
+            try:
+                if int(postData['cant_convenios']) > 100:
+                    errors['cant_convenios_cien'] = "No es posible superar los 100 convenios mensuales." 
+
+
+            except Exception as e:
+                errors['cant_convenios_numero_entero'] = "Debe ingresar solo números enteros en la cantidad de convenios."
+
+
+        return errors
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=13)
@@ -117,13 +207,29 @@ class Usuario(models.Model):
 class PrecioGas(models.Model):
     precio = models.IntegerField()
     usuario = models.ForeignKey(Usuario, related_name="preciogas", on_delete = models.CASCADE)#almacenará el ultimo usuario que modifico
+    estado = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = PrecioGasManager()
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class DescuentoAplicable(models.Model):#establece que descuento se aplicará según el % de la ficha
-    calificacion = models.IntegerField()
-    decuento = models.IntegerField()
+    calificacion_base = models.IntegerField()
+    calificacion_tope = models.IntegerField()
+    descuento = models.IntegerField()
     usuario = models.ForeignKey(Usuario, related_name="descuentoaplicable", on_delete = models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = DescuentoAplicableManager()
+
+
+class CantidadConvenio(models.Model):
+    cantidad_convenios = models.IntegerField()
+    usuario = models.ForeignKey(Usuario, related_name="cantidadconvenio", on_delete = models.CASCADE)
+    estado = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = CantidadConvenioManager()

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Cantidad de convenios mensuales{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Cantidad de convenios{% endblock %}
+{% block content_header_actual%}Cantidad de convenios{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+    <div class="row mb-3 ml-1">
+        <!-- Button trigger modal -->
+        <a href="{% url 'nuevoCantConvenios' %}">
+            <button type="button" class="btn bg-gradient-primary">
+                <i class='fas fa-dollar-sign'></i>
+                Nueva Cantidad
+            </button>
+        </a>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col col-md12">
+                    <div class="card card-danger">
+                        <div class="card-header p-2">
+                            <h6>Cantidad de convenios mensuales por Beneficiario</h6>
+                        </div><!-- /.card-header -->
+                        <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-6 col-sm-10 col-xs-3 text-center">
+                                    <img src="{% static 'img/convenio.png' %}" alt="convenio" width="45%">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-2">
+                                    <ul>
+                                        <li><h4>Fecha    : {{ cant_convenios.updated_at }}</h4></li>
+                                        <li><h4>Cantidad : {{ cant_convenios.cantidad_convenios }}</h4></li>
+                                        <li><h4>Usuario  : {{ cant_convenios.usuario }}</h4></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div><!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                    
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

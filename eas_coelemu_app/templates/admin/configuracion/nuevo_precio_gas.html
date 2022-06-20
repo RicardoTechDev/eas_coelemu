@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Precio del gas{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Precio al {{ fecha }}{% endblock %}
+{% block content_header_actual%}<a href="{% url 'precioGas' %}">Precio Gas</a> / Nuevo Precio{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-danger">
+                    <div class="card-header p-2">
+                        <h6>Nuevo precio</h6>
+                    </div><!-- /.card-header -->
+                    <div class="card-body container-fluid">
+                        <form class="mt-3" action="{% url 'nuevoPrecio' %}" method="POST" id="form_nuevo_precio"> 
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="nuevo_precio" class="col-sm-3 col-form-label">Precio</label>
+                                        <input type="text" class="form-control" id="nuevo_precio" name="nuevo_precio" value="">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-dollar-sign"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="fecha" class="col-sm-3 col-form-label">Fecha</label>
+                                        <input type="text" class="form-control" placeholder="Fecha" id="fecha" name="fecha" value="{{ fecha }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-calendar-alt"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="usuario" class="col-sm-3 col-form-label">Usuario</label>
+                                        <input type="text" class="form-control" placeholder="Usuario" id="usuario" name="usuario" value="{{ request.session.usuario.nombre }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3 float-right">
+                                        <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Guardar</button>
+                                        <a href="{% url 'precioGas' %}" id="cancelar_editar_descuento" class="btn btn-primary ml-1">
+                                            Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+                
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+
+
+$(document).ready(function(){
+    const precio2 = document.querySelector('#nuevo_precio');
+
+    function formatNumber (n) {
+        n = String(n).replace(/\D/g, "");
+        return n === '' ? n : Number(n).toLocaleString();
+    }
+    precio2.addEventListener('keyup', (e) => {
+        const element = e.target;
+        const value = element.value;
+        element.value = formatNumber(value);
+    });
+
+    /* -- para agregar punto de miles al precio al cargar la pagina -- */
+    function humanizeNumber(n) {
+        n = n.toString()
+        while (true) {
+            var n2 = n.replace(/(\d)(\d{3})($|,|\.)/g, '$1.$2$3')
+            if (n == n2) break
+            n = n2
+        }
+        return n
+        };
+
+    const precio = "{{ precio_actual.precio }}"
+    window.onload = function(){
+    document.getElementById("nuevo_precio").value = humanizeNumber(precio);/*colocamos el precio con puntos en el value del input #nuevo_precio*/
+    };
+    /* -- fin agregar punto de miles -- */
+});
+</script>
+{% endblock %}

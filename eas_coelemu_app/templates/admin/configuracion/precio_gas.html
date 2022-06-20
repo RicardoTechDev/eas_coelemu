@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Precio del gas{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Precio gas{% endblock %}
+{% block content_header_actual%}Precio gas{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+    <div class="row mb-3 ml-1">
+        <a href="{% url 'nuevoPrecio' %}">
+            <button type="button" class="btn bg-gradient-primary">
+                <i class='fas fa-dollar-sign'></i>
+                Nuevo precio
+            </button>
+        </a>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col col-md12">
+                    <div class="card card-danger">
+                        <div class="card-header p-2">
+                            <h6>Precio actual cilindro de gas de 15kg</h6>
+                        </div><!-- /.card-header -->
+                        <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-6 col-sm-10 col-xs-3 text-center">
+                                    <img src="{% static 'img/tanque_de_gas.png' %}" alt="tanque de gas" width="30%">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-2">
+                                    <ul>
+                                        <li><h4>Fecha  : {{ precio_gas.updated_at }}</h4></li>
+                                        <li><h4 id="precio_gas">Precio : $</h4></li>
+                                        <li><h4>Usuario: {{ precio_gas.usuario }}</h4></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div><!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                    
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    function humanizeNumber(n) {
+        n = n.toString()
+        while (true) {
+            var n2 = n.replace(/(\d)(\d{3})($|,|\.)/g, '$1.$2$3')
+            if (n == n2) break
+            n = n2
+        }
+        return n
+        };
+
+        let precio = "{{ precio_gas.precio }}"
+        $("#precio_gas").append(humanizeNumber(precio));
+});
+</script>
+{% endblock %}
