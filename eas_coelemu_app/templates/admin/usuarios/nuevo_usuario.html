@@ -20,21 +20,16 @@
                             {% csrf_token %}
                             
                             <div class="row">
-                                <div class="col-md-4 mx-auto">
-                                    <!-- Profile Image -->
+                                <div class="col-md-2 mx-auto">
+                                    <!-- Imagen usuario -->
                                     <div class="form-group text-center">
-                                    <div class="input-group">
-                                        <div id="add-photo" data-toggle="tooltip" data-placement="bottom" title="Subir foto">
-                                            <img src="{% static 'img/subir_foto_usuario.png' %}"  class="img-fluid crop" alt="Subir foto" id="foto" width="75%">
-                                        </div>
-                                        <input type="file" name="registro_imagen" id="registro_imagen" style="display:none;">
-                                    </div>
+                                        <img src="{% static 'img/usuario.png' %}"  class="img-fluid crop"  width="30%">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mx-auto">
                                     <div class="input-group mb-3">
                                         <label for="registro_nombres" class="col-sm-3 col-form-label">Nombres</label>
-                                        <input type="text" class="form-control" placeholder="Nombres" id="registro_nombres" name="registro_nombres">
+                                        <input type="text" class="form-control" placeholder="Nombres" id="registro_nombres" name="registro_nombres" value="{{ request.session.registro_nombres }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
@@ -43,7 +38,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_ap_paterno" class="col-sm-3 col-form-label">Apellido paterno</label>
-                                        <input type="text" class="form-control" placeholder="Apellido paterno" id="registro_ap_paterno" name="registro_ap_paterno">
+                                        <input type="text" class="form-control" placeholder="Apellido paterno" id="registro_ap_paterno" name="registro_ap_paterno" value="{{ request.session.registro_ap_paterno }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
@@ -52,7 +47,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_ap_materno" class="col-sm-3 col-form-label">Apellido materno</label>
-                                        <input type="text" class="form-control" placeholder="Apellido materno" id="registro_ap_materno" name="registro_ap_materno">
+                                        <input type="text" class="form-control" placeholder="Apellido materno" id="registro_ap_materno" name="registro_ap_materno" value="{{ request.session.registro_ap_materno }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
@@ -61,7 +56,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_rut" class="col-sm-3 col-form-label">RUT</label>
-                                        <input type="text" class="form-control" placeholder="11111111-1" id="registro_rut" name="registro_rut">
+                                        <input type="text" class="form-control" placeholder="11111111-1" id="registro_rut" name="registro_rut" value="{{ request.session.registro_rut }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-id-card"></span>
@@ -70,7 +65,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_celular" class="col-sm-3 col-form-label">Celular</label>
-                                        <input type="text" class="form-control" placeholder="Celular" id="registro_celular" name="registro_celular">
+                                        <input type="text" class="form-control" placeholder="Celular" id="registro_celular" name="registro_celular" value="{{ request.session.registro_celular }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-mobile"></span>
@@ -79,7 +74,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_email" class="col-sm-3 col-form-label">Email</label>
-                                        <input type="email" class="form-control" placeholder="Email" id="registro_email" name="registro_email">
+                                        <input type="email" class="form-control" placeholder="Email" id="registro_email" name="registro_email" value="{{ request.session.registro_email }}">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-envelope"></span>
@@ -89,7 +84,7 @@
                                     <div class="input-group mb-3">
                                         <label for="registro_email" class="col-sm-3 col-form-label">Rol</label>
                                         <select class="form-control" name="registro_rol" id="registro_rol">
-                                            <option selected>Abrir menú de selección</option>
+                                            <option selected>Seleccionar Rol</option>
                                             {% for rol in roles %}
                                             <option value="{{ rol.id }}">{{ rol }}</option>
                                             {% endfor %}
@@ -100,9 +95,61 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                </div>
+                            </div>
+                            <!--=============  USUARIO BENEFICIARIO ==================-->
+                            <div class="row mt-4" id="usuario_beneficiario" style="display:none;">
+                                <div class="col-md-2 mx-auto">
+                                    <!-- Imagen hogar -->
+                                    <div class="form-group text-center">
+                                        <img src="{% static 'img/hogar.png' %}"  class="img-fluid crop" width="30%">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group my-3">
+                                        <h5>Registro Social de Hogares del beneficiario</h5>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_direccion" class="col-sm-3 col-form-label">Dirección</label>
+                                        <input type="text" class="form-control" placeholder="Calle / Número / Villa o Población" id="rsh_direccion" name="rsh_direccion" value="{{ request.session.rsh_direccion }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_calificacion" class="col-sm-3 col-form-label">Calificación Soc. Eco. %</label>
+                                        <input type="text" class="form-control" placeholder="Entre 0 y 100" id="rsh_calificacion" name="rsh_calificacion" value="{{ request.session.rsh_calificacion }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_pdf" class="col-sm-3 col-form-label">RSH (archivo pdf)</label>
+                                        <input type="file" class="" placeholder="" id="rsh_pdf" name="rsh_pdf">                                    
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-6">
                                     <div class="row mt-3 float-right">
                                         <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Registrar</button>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+
                                 </div>
                             </div>
                         </form>
@@ -119,6 +166,19 @@
 </section>
 {% endblock %}
 {% block scripts %}
+<script>
+$(document).ready(function(){
+        $('#registro_rol').on('change', function (){
+            let seleccion= $(this).children("option:selected").val();
+            if(seleccion == '{{ id_rol_beneficiario }}'){
+                $('#usuario_beneficiario').show();
+            }
+            else{
+                $('#usuario_beneficiario').hide();
+            }
+    });
+});
+</script>
 <script>
     //$(function () {bsCustomFileInput.init();});
     $("#add-photo").tooltip()//para el mesaje de subir foto

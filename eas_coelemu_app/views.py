@@ -1,11 +1,12 @@
 #$ python -m pip freeze
+from ast import Return
 from multiprocessing import context
 from re import template
 from django.conf import Settings
 from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from eas_coelemu_app.models import PrecioGas, Usuario, Rol, DescuentoAplicable, CantidadConvenio
+from eas_coelemu_app.models import *
 from eas_coelemu_app.decorators import loginRequired
 from eas_coelemu_app.functions import *
 #para en envío de correos
@@ -158,6 +159,7 @@ def login(request):
 @loginRequired
 def logout(request):
     if 'usuario' in request.session:
+        request.session['usuario'] = ''
         del request.session['usuario']  
         #request.session.flush()
         #request.session.delete()
@@ -191,8 +193,10 @@ def usuarios(request):
 @loginRequired
 def nuevoUsuario(request):
     if request.method == 'GET':
+        rol_beneficiario = Rol.objects.get(nombre = 'Beneficiario')
         context = {
-                'roles':  Rol.objects.all() #.exclude(rol__nombre='Adminstrador')
+                'roles':  Rol.objects.all(), #.exclude(rol__nombre='Adminstrador')
+                'id_rol_beneficiario' : rol_beneficiario.id
                 }
         return render(request, 'admin/usuarios/nuevo_usuario.html', context)
 
@@ -200,49 +204,116 @@ def nuevoUsuario(request):
         errors = Usuario.objects.validador_basico(request.POST)
         rut_nuevo_registro = formRut(request.POST['registro_rut'])
 
-
-        if Usuario.objects.filter(rut=int(rut_nuevo_registro['rut'])).exists():
-            errors['existe_registro'] = f"El usuario con RUT {request.POST['registro_rut']} ya se encuentra registrado."; 
-
+    
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value);
+            #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
+            request.session['registro_nombres'] =  request.POST['registro_nombres']
+            request.session['registro_ap_paterno'] = request.POST['registro_ap_paterno']
+            request.session['registro_ap_materno'] = request.POST['registro_ap_materno']
+            request.session['registro_rut'] = request.POST['registro_rut']
+            request.session['registro_celular'] = request.POST['registro_celular']
+            request.session['registro_email'] = request.POST['registro_email']
+            request.session['registro_rol'] = request.POST['registro_rol']
             return redirect(nuevoUsuario)
         
+        if Usuario.objects.filter(rut=int(rut_nuevo_registro['rut'])).exists():
+            errors['existe_registro'] = f"El usuario con RUT {request.POST['registro_rut']} ya se encuentra registrado."; 
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(nuevoUsuario)
+
+        
+
         else:
             new_password = crearPass()
             password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-            rol_usuario = Rol.objects.get(nombre = 'Asistente')
-            imagen_usuario = ''
+            rol_nuevo_usuario = Rol.objects.get(id=request.POST['registro_rol'])
+            rsh_beneficiario = ''
             
-            if request.FILES.get('registro_imagen'):
-                imagen_usuario = request.FILES['registro_imagen']
+            if rol_nuevo_usuario.nombre != 'Beneficiario':
+                new_user = Usuario.objects.create(
+                                                nombres = request.POST['registro_nombres'],
+                                                apellido_paterno = request.POST['registro_ap_paterno'],
+                                                apellido_materno = request.POST['registro_ap_materno'],
+                                                rut = int(rut_nuevo_registro['rut']),
+                                                dv = rut_nuevo_registro['dv'],
+                                                imagen = '',
+                                                celular = request.POST['registro_celular'],
+                                                email = request.POST['registro_email'],
+                                                contrasena = password_encryp,
+                                                rol = rol_nuevo_usuario,
+                                                estado= 1
+                                                )
+                sendWelcomeMail(new_user, new_password)
 
-            new_user = Usuario.objects.create(
-                                            nombres = request.POST['registro_nombres'],
-                                            apellido_paterno = request.POST['registro_ap_paterno'],
-                                            apellido_materno = request.POST['registro_ap_materno'],
-                                            rut = int(rut_nuevo_registro['rut']),
-                                            dv = rut_nuevo_registro['dv'],
-                                            imagen = imagen_usuario,
-                                            celular = request.POST['registro_celular'],
-                                            email = request.POST['registro_email'],
-                                            contrasena = password_encryp,
-                                            rol = Rol.objects.get(id=request.POST['registro_rol']),
-                                            estado= 1
-                                            )
-                        
-            messages.success(request, f"Nuevo usuario registrado con exito.")
-            sendWelcomeMail(new_user, new_password)
+                messages.success(request, f"Nuevo usuario registrado con exito.")
 
-            
+            else:
+                errors = GrupoFamiliar.objects.validador_basico(request.POST)
+                if len(errors) > 0:
+                    for key, value in errors.items():
+                        messages.error(request, value);
+                    #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
+                    request.session['rsh_calificacion'] = request.POST['rsh_calificacion']
+                    request.session['rsh_direccion'] = request.POST['rsh_direccion']
+                    return redirect(nuevoUsuario)
+                
+                else:
+                    new_password = crearPass()
+                    password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+                    rol_nuevo_usuario = Rol.objects.get(id=request.POST['registro_rol'])
+                    if request.FILES.get('rsh_pdf'):
+                        rsh_beneficiario = request.FILES['rsh_pdf']
+
+                    new_user = Usuario.objects.create(
+                                                nombres = request.POST['registro_nombres'],
+                                                apellido_paterno = request.POST['registro_ap_paterno'],
+                                                apellido_materno = request.POST['registro_ap_materno'],
+                                                rut = int(rut_nuevo_registro['rut']),
+                                                dv = rut_nuevo_registro['dv'],
+                                                imagen = '',
+                                                celular = request.POST['registro_celular'],
+                                                email = request.POST['registro_email'],
+                                                contrasena = password_encryp,
+                                                rol = rol_nuevo_usuario,
+                                                estado= 1
+                                                )
+                    sendWelcomeMail(new_user, new_password)
+
+                    new_grupo_familiar = GrupoFamiliar.objects.create(
+                                                calif_soc_eco = request.POST['rsh_calificacion'],
+                                                direccion = request.POST['rsh_direccion'],
+                                                rsh_archivo = rsh_beneficiario,
+                                                estado = 1
+                                                )
+                    new_beneficiario = Beneficiario.objects.create(
+                                                grupo_familiar = new_grupo_familiar,
+                                                usuario = new_user,
+                                                estado = 1
+                                                )
+                    messages.success(request, f"Nuevo usuario beneficiario registrado con exito.")
+
+        delVaSessionUsuarios(request)
         return redirect(usuarios)
         
+
+def delVaSessionUsuarios(request):
+    del request.session['registro_nombres']
+    del request.session['registro_ap_paterno']
+    del request.session['registro_ap_materno']
+    del request.session['registro_rut']
+    del request.session['registro_celular']
+    del request.session['registro_email']
+    del request.session['registro_rol']
+    del request.session['rsh_calificacion']
+    del request.session['rsh_direccion']
+
 
 
 def cambiarEstadoUsuario(request, id_user):
     usuario = Usuario.objects.get(id=id_user)
-    print(f"Id {id_user} estado {usuario.estado} y id {usuario.id}")
 
     if usuario.estado == 1:
         usuario.estado = 0
@@ -261,24 +332,121 @@ def editarUsuario(request, id_user):
 
     usuario = Usuario.objects.get(id=id_user)
     roles = Rol.objects.all()
+    grupo_familiar = ''
+    rol_beneficiario = Rol.objects.get(nombre = 'Beneficiario')
+    
     if request.method == 'GET':
+        if usuario.rol.nombre == 'Beneficiario':#para obtener los datos de grupo familiar 
+            beneficiario = Beneficiario.objects.get(usuario=usuario.id)
+            grupo_familiar = GrupoFamiliar.objects.get(id=beneficiario.grupo_familiar.id)
+            #print(grupo_familiar.id)
+
         context = {
                 'usuario':  usuario,
+                'usuario_rut' : (f"{usuario.rut}-{usuario.dv}"),
                 'roles': roles,
+                'grupo_familiar' : grupo_familiar,
+                'id_rol_beneficiario' : rol_beneficiario.id
                 }
         return render(request, 'admin/usuarios/editar_usuario.html', context)
 
     elif request.method == 'POST':
-        usuario.nombres = request.POST['editar_nombres']
-        usuario.apellido_paterno = request.POST['editar_ap_paterno']
-        usuario.apellido_materno = request.POST['editar_ap_materno']
-        #usuario.imagen = imagen_usuario,
-        usuario.celular = request.POST['editar_celular']
-        usuario.email = request.POST['editar_email']
-        rol = Rol.objects.get(id=request.POST['editar_rol'])#instancia de rol
-        usuario.rol = rol 
-        usuario.save()
+        errors = Usuario.objects.validador_basico(request.POST)
+        rsh_beneficiario = ''
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value);
+            return redirect(editarUsuario,id_user)
 
+        if request.FILES.get('rsh_pdf'):
+            rsh_beneficiario = request.FILES['rsh_pdf']
+
+        #si rol no beneficiario
+        rol_usuario_editar = Rol.objects.get(id=request.POST['registro_rol'])
+        if rol_usuario_editar.nombre != 'Beneficiario':
+            usuario.nombres = request.POST['registro_nombres']
+            usuario.apellido_paterno = request.POST['registro_ap_paterno']
+            usuario.apellido_materno = request.POST['registro_ap_materno']
+            usuario.celular = request.POST['registro_celular']
+            usuario.email = request.POST['registro_email']
+            rol = Rol.objects.get(id=request.POST['registro_rol'])#instancia de rol
+            usuario.rol = rol 
+            usuario.save()
+            messages.success(request, f"Usuario editado con exito.")
+
+        #si el rol es beneficiario y es el mismo que tenia antes de editar
+        if rol_usuario_editar.nombre == 'Beneficiario' and rol_usuario_editar.nombre == usuario.rol.nombre:
+            errors = GrupoFamiliar.objects.validador_basico(request.POST)
+            if len(errors) > 0:
+                for key, value in errors.items():
+                    messages.error(request, value);
+                return redirect(editarUsuario,id_user)
+
+            
+            beneficiario = Beneficiario.objects.get(usuario=usuario.id)
+            grupo_familiar = GrupoFamiliar.objects.get(id=beneficiario.grupo_familiar.id)
+
+            usuario.nombres = request.POST['registro_nombres']
+            usuario.apellido_paterno = request.POST['registro_ap_paterno']
+            usuario.apellido_materno = request.POST['registro_ap_materno']
+            usuario.celular = request.POST['registro_celular']
+            usuario.email = request.POST['registro_email']
+            usuario.rol = Rol.objects.get(id=request.POST['registro_rol'])#instancia de rol
+            grupo_familiar.calif_soc_eco = request.POST['rsh_calificacion']
+            grupo_familiar.direccion = request.POST['rsh_direccion']
+            grupo_familiar.rsh_archivo =  rsh_beneficiario
+            usuario.save()
+            grupo_familiar.save()
+            messages.success(request, f"Beneficiario editado con exito.")
+
+        #si el rol es beneficiario y es distinto al que tenia antes de editar
+        if rol_usuario_editar.nombre == 'Beneficiario' and rol_usuario_editar.nombre != usuario.rol.nombre:
+            errors = GrupoFamiliar.objects.validador_basico(request.POST)
+            if len(errors) > 0:
+                for key, value in errors.items():
+                    messages.error(request, value);
+                return redirect(editarUsuario,id_user)
+
+            #comprobar si tenia un beneficiario
+            if  Beneficiario.objects.get(usuario=usuario.id):
+                #si lo tenia editamos el grupo familiar asociado al beneficiario asociado al usuario
+                beneficiario = Beneficiario.objects.get(usuario=usuario.id)
+                grupo_familiar = GrupoFamiliar.objects.get(id=beneficiario.grupo_familiar.id)
+
+                usuario.nombres = request.POST['registro_nombres']
+                usuario.apellido_paterno = request.POST['registro_ap_paterno']
+                usuario.apellido_materno = request.POST['registro_ap_materno']
+                usuario.celular = request.POST['registro_celular']
+                usuario.email = request.POST['registro_email']
+                usuario.rol = Rol.objects.get(id=request.POST['registro_rol'])#instancia de rol
+                grupo_familiar.calif_soc_eco = request.POST['rsh_calificacion']
+                grupo_familiar.direccion = request.POST['rsh_direccion']
+                grupo_familiar.rsh_archivo =  rsh_beneficiario
+                usuario.save()
+                grupo_familiar.save()
+                messages.success(request, f"Beneficiario editado con exito.")
+            
+            else:
+                #si no lo tenia creamos un beneficiario y grupo familiar nuevo
+                usuario.nombres = request.POST['registro_nombres']
+                usuario.apellido_paterno = request.POST['registro_ap_paterno']
+                usuario.apellido_materno = request.POST['registro_ap_materno']
+                usuario.celular = request.POST['registro_celular']
+                usuario.email = request.POST['registro_email']
+                usuario.rol = Rol.objects.get(id=request.POST['registro_rol'])#instancia de rol
+                usuario.save()
+                
+                new_grupo_familiar = GrupoFamiliar.objects.create(
+                                                calif_soc_eco = request.POST['rsh_calificacion'],
+                                                direccion = request.POST['rsh_direccion'],
+                                                rsh_archivo = rsh_beneficiario,
+                                                estado = 1
+                                                )
+                new_beneficiario = Beneficiario.objects.create(
+                                            grupo_familiar = new_grupo_familiar,
+                                            usuario = usuario,
+                                            estado = 1
+                                            )
     
     return redirect(usuarios)
 
@@ -491,6 +659,14 @@ def nuevoCantConvenios(request):
             
         return redirect(cantConvenios)
 
+
+
+def nuevoHogar(request, id_user):
+    usuario = Usuario.objects.get(id=id_user)
+    context = {
+                    'usuario':  usuario,
+                }
+    return render(request, 'registro_nuevo_hogar.html', context)
 
 
 def error404(request):

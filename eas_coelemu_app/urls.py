@@ -21,6 +21,7 @@ urlpatterns = [
     path('eliminar-descuento/<int:id_descuento>', views.eliminarDescuento, name = 'eliminarDescuento'),
     path('cantidad-convenios', views.cantConvenios, name = "cantConvenios"),
     path('nuevo-cantidad-convenios', views.nuevoCantConvenios, name = "nuevoCantConvenios"),
+    path('nuevo-hogar/<int:id_user>', views.nuevoHogar, name = 'nuevoHogar'),
     path('404', views.error404, name='error404'),
     
     

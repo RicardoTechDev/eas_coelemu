@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from itertools import cycle
 import re
@@ -72,7 +73,9 @@ class UsuarioManager(models.Manager):
         
         if not EMAIL_REGEX.match(postData['registro_email']):
             errors['fail_email'] = "Correo invalido."
-
+            
+        if postData['registro_rol'] == 'Seleccionar Rol':
+            errors['fail_rol'] = "Debe selecionar un Rol para el usuario."
 
         return errors
 
@@ -167,6 +170,49 @@ class CantidadConvenioManager(models.Manager):
 
         return errors
 
+
+class GrupoFamiliarManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        if len(postData['rsh_direccion']) == 0:
+            errors['rsh_direccion_len'] = "Debe ingresar la dirección del RHS."
+
+        if len(postData['rsh_calificacion']) == 0:
+            errors['rsh_calificacion_len'] = "Debe ingresar la calificación socioeconómica del RHS."
+
+        if postData['rsh_calificacion']:
+            try:
+                if int(postData['rsh_calificacion']) < 0 or int(postData['rsh_calificacion']) > 100:
+                    errors['rsh_calificacion_menor'] = "Debe ingresar un calificación socioeconómica entre 0 y 100."
+            except Exception as e:
+                errors['rsh_calificacion'] = "Debe ingresar solo números enteros en calificación socioeconómica."
+
+        
+        
+
+        return errors
+
+class IntegranteGrupoFamiliarManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        #if len(postData['registro_nombres']) < 3:
+        #   errors['nombres_len'] = "Los nombres deben tener al menos 3 caracteres de largo."
+
+        return errors
+
+
+class BeneficiarioManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        #if len(postData['registro_nombres']) < 3:
+        #   errors['nombres_len'] = "Los nombres deben tener al menos 3 caracteres de largo."
+
+        return errors
+
+
 class Rol(models.Model):
     nombre = models.CharField(max_length=13)
     descripcion = models.TextField()
@@ -233,3 +279,35 @@ class CantidadConvenio(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = CantidadConvenioManager()
+
+
+class GrupoFamiliar(models.Model):   
+    calif_soc_eco = models.IntegerField()
+    direccion = models.CharField(max_length=200)
+    rsh_archivo = models.FileField(upload_to="grupo_familiar/", null=True, blank=True)#Archivo Pdf Registro Social de Hogares 
+    estado = models.IntegerField()#Actvivo(1) o Inactivo(0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = GrupoFamiliarManager()
+
+
+class IntegranteGrupoFamiliar(models.Model):
+    nombres = models.CharField(max_length=255) 
+    apellido_paterno = models.CharField(max_length=255)
+    apellido_materno = models.CharField(max_length=255)
+    rut = models.IntegerField()
+    dv = models.CharField(max_length=1)
+    parentesco = models.CharField(max_length=25)#con el beneficiario
+    grupo_familiar = models.ForeignKey(GrupoFamiliar, related_name="integrante", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = IntegranteGrupoFamiliarManager()
+
+
+class Beneficiario(models.Model):
+    grupo_familiar = models.ForeignKey(GrupoFamiliar, related_name="beneficiario", on_delete = models.CASCADE)
+    usuario = models.ForeignKey(Usuario, related_name="beneficiario", on_delete = models.CASCADE)#Usuario asociado al beneficiario 
+    estado = models.IntegerField()#Actvivo(1) o Inactivo(0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = BeneficiarioManager()
