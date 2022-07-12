@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
-{% block titulo %}Editar mi perfil{% endblock %}
-
+{% block titulo %}Cambiar Contraseña{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/password-strength.scss' %}">
+{% endblock %}
 <!-- Content Header (Page header) -->
 {% block content_header_title%}Mi Perfil{% endblock %}
-{% block content_header_actual%}<a href="{% url 'miPerfil' request.session.usuario.id %}">Mi Perfil</a>  / Editar Perfil{% endblock %}
+{% block content_header_actual%}<a href="{% url 'miPerfil' request.session.usuario.id %}">Mi Perfil</a>  / Cambiar Contraseña{% endblock %}
 <!-- Main content -->
 {% block content_main %}
 <div class="row mb-3 ml-1">
@@ -16,23 +18,22 @@
             <div class="col col-md12">
                 <div class="card card-warning">
                     <div class="card-header p-2">
-                        <h6>Datos usuario</h6>
+                        <h6>Cambiar contraseña</h6>
                     </div><!-- /.card-header -->
                     <div class="card-body container-fluid">
-                        <form class="mt-3" action="{% url 'editarPerfil' usuario.id %}" method="POST" id="form_editar_usuario" enctype="multipart/form-data"> 
+                        <form class="mt-3" action="{% url 'cambiarContrasena' request.session.usuario.id %}" method="POST" id="form_cambiar_contrasena"> 
                             {% csrf_token %}
-                            <input type="hidden" name="registro_rol" class="form-control" value="{{ usuario.rol }}" > 
                             <div class="row">
                                 <div class="col-md-2 mx-auto">
                                     <!-- Imagen usuario -->
                                     <div class="form-group text-center">
-                                        <img src="{% static 'img/usuario.png' %}"  class="img-fluid crop"  width="40%">
+                                        <img src="{% static 'img/password.png' %}"  class="img-fluid crop"  width="40%">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mx-auto">
                                     <div class="input-group mb-3">
-                                        <label for="registro_nombres" class="col-sm-3 col-form-label">Nombres</label>
-                                        <input type="text" class="form-control" placeholder="Nombres" id="registro_nombres" name="registro_nombres" value="{{ usuario.nombres }}">
+                                        <label for="contrasena_actual" class="col-sm-3 col-form-label">Contraseña Actual</label>
+                                        <input type="password" class="form-control" placeholder="Contrasena actual" id="contrasena_actual" name="contrasena_actual">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
@@ -40,47 +41,33 @@
                                         </div>
                                     </div>
                                     <div class="input-group mb-3">
-                                        <label for="registro_ap_paterno" class="col-sm-3 col-form-label">Apellido paterno</label>
-                                        <input type="text" class="form-control" placeholder="Apellido paterno" id="registro_ap_paterno" name="registro_ap_paterno" value="{{ usuario.apellido_paterno }}">
+                                        <label for="contrasena_nueva" class="col-sm-3 col-form-label">Nueva Contraseña</label>
+                                        <input type="password" class="form-control" placeholder="Contraseña nueva" id="contrasena_nueva" name="contrasena_nueva">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="password-strength_container"></div>
+                                    <ul>
+                                        <li data-contains="8-chars">
+                                            Al menos 8 carácteres.
+                                        </li>
+                                        <li data-contains="upper-lower-and-num">
+                                            Debe contener al menos una letra en mayúscula, una en minúscula, y un
+                                            número.
+                                        </li>
+                                        <li data-contains="special-chars">
+                                            Puede contener carácteres especiales.
+                                        </li>
+                                </ul>
                                     <div class="input-group mb-3">
-                                        <label for="registro_ap_materno" class="col-sm-3 col-form-label">Apellido materno</label>
-                                        <input type="text" class="form-control" placeholder="Apellido materno" id="registro_ap_materno" name="registro_ap_materno" value="{{ usuario.apellido_materno }}">
+                                        <label for="contrasena_confirmacion" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
+                                        <input type="password" class="form-control" placeholder="Confirmación contraseña" id="contrasena_confirmacion" name="contrasena_confirmacion">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <label for="registro_rut" class="col-sm-3 col-form-label">RUT</label>
-                                        <input type="text" class="form-control" placeholder="11111111-1" id="registro_rut" name="registro_rut" value="{{ usuario.rut }}-{{ usuario.dv}}" readonly>
-                                        <div class="input-group-append">
-                                            <div class="input-group-text">
-                                            <span class="fas fa-id-card"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <label for="registro_celular" class="col-sm-3 col-form-label">Celular</label>
-                                        <input type="text" class="form-control" placeholder="Celular" id="registro_celular" name="registro_celular" value="{{ usuario.celular }}">
-                                        <div class="input-group-append">
-                                            <div class="input-group-text">
-                                            <span class="fas fa-mobile"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <label for="registro_email" class="col-sm-3 col-form-label">Email</label>
-                                        <input type="email" class="form-control" placeholder="Email" id="registro_email" name="registro_email" value="{{ usuario.email }}">
-                                        <div class="input-group-append">
-                                            <div class="input-group-text">
-                                            <span class="fas fa-envelope"></span>
                                             </div>
                                         </div>
                                     </div>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Beneficiarios registrados{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Beneficiarios Registrados{% endblock %}
+{% block content_header_actual%}Beneficiarios{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+    <div class="row mb-3 ml-1">
+        <!-- Button trigger modal -->
+        <a href="{% url 'nuevoBeneficiario' %}">
+            <button type="button" class="btn bg-gradient-primary">
+                <i class='fas fa-user-plus'></i>
+                Nuevo Beneficiario
+            </button>
+        </a>
+    </div>
+    <!-- Tabla de usuarios -->
+    <table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+        <thead class="bg-warning">
+        <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Email</th>
+            <th>Celular</th>
+            <th>Fecha registro</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+        </thead>
+        <tbody> 
+            {% for beneficiario in beneficiarios %}
+            <tr>
+                <td>{{ beneficiario }}</td>
+                <td>{{ beneficiario.rut }}-{{beneficiario.dv}}</td>
+                <td>{{ beneficiario.email }}</td>
+                <td>{{ beneficiario.celular }}</td>
+                <td>{{ beneficiario.created_at }}</td>
+                <td class="text-center">
+                    {% if beneficiario.estado == 1%}
+                    <a href="{% url 'cambiarEstadoUsuario' beneficiario.id %}">
+                        <button type="button" class="btn btn-success">    
+                            <i class='fas fa-user-check'>Activo</i>
+                        </button>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'cambiarEstadoUsuario' beneficiario.id %}">
+                        <button type="button" class="btn btn-danger">
+                            <i class='fas fa-user-lock'>Inactivo</i>
+                        </button>
+                    </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'editarbeneficiario'   beneficiario.id%}">
+                        <button type="button" class="btn btn-primary">
+                            Editar
+                        </button>
+                    </a>
+                    <a href="#">
+                        <button type="button" class="btn btn-primary">
+                            Ver
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- ./Tabla de usuarios -->
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

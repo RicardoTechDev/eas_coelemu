@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}" id="theme-styles"><!-- toastr -->
     <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block css %}{% endblock %}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
@@ -47,7 +48,7 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-        <!-- Navbar Search -->
+        <!-- Navbar Search 
         <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
             <i class="fas fa-search"></i>
@@ -68,6 +69,7 @@
             </form>
         </div>
         </li>
+        -->
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#" title="Notificaciones">
@@ -124,12 +126,13 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
-            <a href="{% url 'editarPerfil' request.session.usuario.id %}" class="d-block">{{ request.session.usuario.nombre }}</a>
+            <a href="{% url 'miPerfil' request.session.usuario.id %}" class="d-block">{{ request.session.usuario.nombre }}</a>
         </div>
         </div>
 
         <!-- SidebarSearch Form -->
         <div class="form-inline">
+        <!--
         <div class="input-group" data-widget="sidebar-search">
             <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
             <div class="input-group-append">
@@ -138,92 +141,24 @@
             </button>
             </div>
         </div>
+        -->
         </div>
+        <!-- Sidebar Menu Director -->
+        {% if request.session.usuario.rol == 'Administrador' %}
+            {% include "admin/menu_admin.html" %}
+        {% endif %}
+            
+        <!-- Sidebar Menu Director -->
 
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            <!-- Add icons to the links using the .nav-icon class
-                with font-awesome or any other icon font library -->
-            <li class="nav-item">
-                <a href="{% url 'usuarios' %}" class="nav-link">
-                    <i class='fas fa-users-cog'></i>
-                    <p>Usuarios</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-table"></i>
-                    <p>
-                        Convenios
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                    <a href="pages/tables/simple.html" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Historico</p>
-                    </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-table"></i>
-                    <p>
-                    Grupos Familiares
-                    <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                    <a href="pages/tables/simple.html" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Todos los grupos</p>
-                    </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class='fas fa-users-cog'></i>
-                    <p>Solicitudes</p>
-                </a>
-            </li>
-            <li class="nav-header">EXAMPLES</li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-table"></i>
-                    <p>
-                    Configuración
-                    <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                    <a href="{% url 'precioGas' %}" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Precio Gas</p>
-                    </a>
-                    </li>
-                    <li class="nav-item">
-                    <a href="{% url 'descuentoAplicable' %}" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Descuento Aplicable</p>
-                    </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'cantConvenios' %}" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Convenios por Beneficiario</p>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
+        <!-- Sidebar Menu Asistente -->
+        {% if request.session.usuario.rol == 'Asistente' %}
+            {% include "asistente/menu_asistente.html" %}
+        {% endif %}
+
+        <!-- Sidebar Menu Beneficiario -->
+        
+
+
     </div>
     <!-- /.sidebar -->
     </aside>

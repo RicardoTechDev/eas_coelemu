@@ -40,6 +40,49 @@ class UsuarioManager(models.Manager):
 
     def validador_basico(self, postData):
         EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
+        SOLO_LETRAS = re.compile(r'^[a-zA-Z_ÑñÁáÉéÍíÓóÚú. ]+$')  
+
+        errors = {}
+
+        rut = self.formRut(postData['registro_rut'])
+        dv = str(self.digito_verificador(rut['rut']))#El digito verificador pueder ser un número o k
+
+        if len(postData['registro_nombres']) < 3:
+            errors['nombres_len'] = "Los nombres deben tener al menos 3 caracteres de largo."
+        
+        if not SOLO_LETRAS.match(postData['registro_nombres']):
+            errors['solo_letras_nombres'] = "Los nombres deben contener solo letras."
+
+        if len(postData['registro_ap_paterno']) < 3:
+            errors['ap_paternon'] = "El apellido paterno debe tener al menos 3 caracteres de largo."
+
+        if not SOLO_LETRAS.match(postData['registro_ap_paterno']):
+            errors['solo_letras_ap_paterno'] = "El apellido paterno debe contener solo letras."
+
+        if len(postData['registro_ap_materno']) < 3:
+            errors['ap_paternon'] = "El apellido materno debe tener al menos 3 caracteres de largo."
+
+        if not SOLO_LETRAS.match(postData['registro_ap_materno']):
+            errors['solo_letras_ap_materno'] = "El apellido materno debe contener solo letras."
+
+        if postData['registro_rut'] == '':
+            errors['rut_vacio'] = "Debe ingresar el RUT."
+        
+        if  rut['dv']!=dv:
+            errors['rut_incorrecto'] = "El RUT ingresado no es valido."
+        
+        if not EMAIL_REGEX.match(postData['registro_email']):
+            errors['fail_email'] = "Correo invalido."
+            
+        if postData['registro_rol'] == 'Seleccionar Rol':
+            errors['fail_rol'] = "Debe selecionar un Rol para el usuario."
+
+        return errors
+
+
+
+    def validador_beneficiario(self, postData):
+        EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
         SOLO_LETRAS = re.compile(r'^[a-zA-Z. ]+$')  
 
         errors = {}
@@ -74,11 +117,8 @@ class UsuarioManager(models.Manager):
         if not EMAIL_REGEX.match(postData['registro_email']):
             errors['fail_email'] = "Correo invalido."
             
-        if postData['registro_rol'] == 'Seleccionar Rol':
-            errors['fail_rol'] = "Debe selecionar un Rol para el usuario."
 
         return errors
-
 
 
 class PrecioGasManager(models.Manager):
@@ -193,6 +233,7 @@ class GrupoFamiliarManager(models.Manager):
 
         return errors
 
+
 class IntegranteGrupoFamiliarManager(models.Manager):
     def validador_basico(self, postData):
         errors = {}
@@ -204,6 +245,26 @@ class IntegranteGrupoFamiliarManager(models.Manager):
 
 
 class BeneficiarioManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        #if len(postData['registro_nombres']) < 3:
+        #   errors['nombres_len'] = "Los nombres deben tener al menos 3 caracteres de largo."
+
+        return errors
+
+
+class ConvenioManager(models.Manager):
+    def validador_basico(self, postData):
+        errors = {}
+
+        #if len(postData['registro_nombres']) < 3:
+        #   errors['nombres_len'] = "Los nombres deben tener al menos 3 caracteres de largo."
+
+        return errors
+
+
+class SolicitudManager(models.Manager):
     def validador_basico(self, postData):
         errors = {}
 
@@ -311,3 +372,22 @@ class Beneficiario(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = BeneficiarioManager()
+
+
+class Convenio(models.Model):
+    usuario = models.ForeignKey(Usuario, related_name="convenio", on_delete = models.CASCADE)#Usuario que genera el convenio
+    beneficiario = models.ForeignKey(Beneficiario, related_name="convenio", on_delete = models.CASCADE)
+    precio = models.IntegerField()
+    descuento_aplicado = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = ConvenioManager()
+
+class Solicitud(models.Model):
+    usuario = models.ForeignKey(Usuario, related_name="solicitud", on_delete = models.CASCADE)#Usuario que valida la solicitud
+    beneficiario = models.ForeignKey(Beneficiario, related_name="solicitud", on_delete = models.CASCADE)#Beneficiario -> Usuario que realiza la solicitud
+    observación = models.TextField()
+    estado = models.IntegerField()#0 pendiente, 1 aceptada, 2 rechazada
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = SolicitudManager()

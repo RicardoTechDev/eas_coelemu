@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Descuento aplicable{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Descuento aplicable{% endblock %}
+{% block content_header_actual%}Descuento aplicable{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+    <div class="row mb-3 ml-1">
+        
+    </div>
+    <!-- Tabla de descuentos -->
+    <table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+        <thead class="bg-danger">
+        <tr>
+            <th>Calificación</th>
+            <th>Descuento aplicable</th>
+            <th>Usuario</th>
+            <th>Fecha actualización</th>
+        </tr>
+        </thead>
+        <tbody> 
+            {% for descuento in descuentos %}
+            <tr>
+                <td>{{ descuento.calificacion_base }}% - {{ descuento.calificacion_tope }}%</td>
+                <td>{{ descuento.descuento }}%</td>
+                <td>{{ descuento.usuario }}</td>
+                <td>{{ descuento.updated_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- ./Tabla de decuentos -->
+{% endblock %}
+{% block scripts %}
+<script>
+    /*DeleteSwal(document.title, "Hola mundo.");*/
+    const btnsDelete=document.querySelectorAll('.btnDelete');
+
+    btnsDelete.forEach(btn => {
+        btn.addEventListener('click',function(event){
+            event.preventDefault();
+            url = event.target.href;
+            DeleteSwal("¿Seguro desea eliminar este descuento?", "",url);
+        })
+    });
+
+</script>
+{% endblock %}

@@ -118,37 +118,32 @@ def login(request):
         
         else:
             #buscamos el rut de usuario ingresado en la base de datos (si existe) y asignamos a la variable user
-            usuario = Usuario.objects.filter(rut=request.POST['rut_login'])
-
-            if usuario: #una lista vacía devolverá falso
-                #si existe tomamos el primer elemento de la lista user (devuelto por filter)
-                log_user = usuario[0]
-
+            usuario = Usuario.objects.get(rut=request.POST['rut_login'])
+            if usuario: #si esta vacio devolverá falso
+                #validamos que el usuario se encuentra activo
+                if usuario.estado == 0:
+                    messages.error(request, "Usuario inactivo, contacte al administrador de la aplicación.")
+                    return redirect("/")#redirigimos al login
                 #validamos la contraseña ingresada por el usuario 
-                if bcrypt.checkpw(request.POST['contrasena_login'].encode(), log_user.contrasena.encode()):
+                if bcrypt.checkpw(request.POST['contrasena_login'].encode(), usuario.contrasena.encode()):
                     # si obtenemos True después de validar la contraseña, podemos poner la identificación del usuario en la sesión
                     usuario_logueado = {
-                        "id" : log_user.id,
-                        "nombre" : f"{log_user}", # usamos el "def __str__(self)" definido en el modelo con return f"{self.firstname} {self.lastname}"
-                        "email" : log_user.email,
-                        "rol" : log_user.rol.nombre
+                        "id" : usuario.id,
+                        "nombre" : f"{usuario}", 
+                        "email" : usuario.email,
+                        "rol" : usuario.rol.nombre
                     }
-
                     request.session['usuario'] = usuario_logueado
-                    #delsession(request)#vaciamos las variables de sesión del registro
-
                     return redirect("home")
 
                 else:#si la contraseña no coincide enviamos un mensaje de error al usuario
                     messages.error(request, "Rut o Contraseña invalidos.")
                     return redirect("login")#redirigimos al login
             
-            else:#si la lista esta vacia significa que no se encontro el email ingresado
-                #enviamos un mensaje de error al usuario
+            else:
                 messages.error(request, "Rut o Contraseña invalidos.")
                 return redirect("login")#redirigimos al login
         
-
     else: 
         if 'usuario'  in request.session:
             messages.error(request, "Usted ya está logeado.")
@@ -167,7 +162,7 @@ def logout(request):
     return redirect("login")
 
 
-@loginRequired #consultamos si el usuario no está logueado 
+@loginRequired 
 def home(request):
     if request.session['usuario']['rol'] == 'Administrador':
         context = {
@@ -177,16 +172,44 @@ def home(request):
         }
         return render(request, 'admin/home.html', context)
 
+    elif request.session['usuario']['rol'] == 'Director':
+        context = {
+            'beneficiarios' : Beneficiario.objects.all(),
+            'cant_beneficiarios' : Beneficiario.objects.all().count(),
+            'precio_gas' : PrecioGas.objects.get(estado=1),
+        }
+        return render(request, 'asistente/home.html', context)
+
+    elif request.session['usuario']['rol'] == 'Asistente':
+        context = {
+            'beneficiarios' : Beneficiario.objects.all(),
+            'cant_beneficiarios' : Beneficiario.objects.all().count(),
+            'precio_gas' : PrecioGas.objects.get(estado=1),
+        }
+        return render(request, 'asistente/home.html', context)
+
+    elif request.session['usuario']['rol'] == 'Beneficiario':
+        context = {
+            'beneficiarios' : Beneficiario.objects.all(),
+            'cant_beneficiarios' : Beneficiario.objects.all().count(),
+            'precio_gas' : PrecioGas.objects.get(estado=1),
+        }
+        return render(request, 'asistente/home.html', context)
+
 
 @loginRequired
 def usuarios(request):
     usuarios = Usuario.objects.all()
-    
+    rol_beneficiario = Rol.objects.get(nombre='Beneficiario')
+    beneficiarios = Usuario.objects.filter(rol=rol_beneficiario.id)
     context = {
-            'usuarios' : usuarios,     
+            'usuarios' : usuarios,
+            'beneficiarios' : beneficiarios     
     }
-
-    return render(request, 'admin/usuarios/usuarios_registrados.html', context)
+    if request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
+        return render(request, 'admin/usuarios/usuarios_registrados.html', context)
+    elif request.session['usuario']['rol'] == 'Asistente':
+        return render(request, 'asistente/usuarios/beneficiarios_registrados.html', context)
 
 
 
@@ -198,41 +221,41 @@ def nuevoUsuario(request):
                 'roles':  Rol.objects.all(), #.exclude(rol__nombre='Adminstrador')
                 'id_rol_beneficiario' : rol_beneficiario.id
                 }
-        return render(request, 'admin/usuarios/nuevo_usuario.html', context)
-
+        if request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
+            return render(request, 'admin/usuarios/nuevo_usuario.html', context)
+        
     elif request.method == 'POST':
         errors = Usuario.objects.validador_basico(request.POST)
         rut_nuevo_registro = formRut(request.POST['registro_rut'])
-
+        #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
+        request.session['registro_nombres'] =  request.POST['registro_nombres']
+        request.session['registro_ap_paterno'] = request.POST['registro_ap_paterno']
+        request.session['registro_ap_materno'] = request.POST['registro_ap_materno']
+        request.session['registro_rut'] = request.POST['registro_rut']
+        request.session['registro_celular'] = request.POST['registro_celular']
+        request.session['registro_email'] = request.POST['registro_email']
+        request.session['registro_rol'] = request.POST['registro_rol']
     
         if len(errors) > 0:
             for key, value in errors.items():
-                messages.error(request, value);
-            #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
-            request.session['registro_nombres'] =  request.POST['registro_nombres']
-            request.session['registro_ap_paterno'] = request.POST['registro_ap_paterno']
-            request.session['registro_ap_materno'] = request.POST['registro_ap_materno']
-            request.session['registro_rut'] = request.POST['registro_rut']
-            request.session['registro_celular'] = request.POST['registro_celular']
-            request.session['registro_email'] = request.POST['registro_email']
-            request.session['registro_rol'] = request.POST['registro_rol']
+                messages.error(request, value)
             return redirect(nuevoUsuario)
         
+        #Si el rut ya se encuentra registrado
         if Usuario.objects.filter(rut=int(rut_nuevo_registro['rut'])).exists():
             errors['existe_registro'] = f"El usuario con RUT {request.POST['registro_rut']} ya se encuentra registrado."; 
             for key, value in errors.items():
-                messages.error(request, value);
+                messages.error(request, value)
             return redirect(nuevoUsuario)
 
-        
-
+        #si el rut no está registrado
         else:
             new_password = crearPass()
             password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
             rol_nuevo_usuario = Rol.objects.get(id=request.POST['registro_rol'])
             rsh_beneficiario = ''
             
-            if rol_nuevo_usuario.nombre != 'Beneficiario':
+            if rol_nuevo_usuario.nombre != 'Beneficiario' and request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
                 new_user = Usuario.objects.create(
                                                 nombres = request.POST['registro_nombres'],
                                                 apellido_paterno = request.POST['registro_ap_paterno'],
@@ -254,16 +277,13 @@ def nuevoUsuario(request):
                 errors = GrupoFamiliar.objects.validador_basico(request.POST)
                 if len(errors) > 0:
                     for key, value in errors.items():
-                        messages.error(request, value);
+                        messages.error(request, value)
                     #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
                     request.session['rsh_calificacion'] = request.POST['rsh_calificacion']
                     request.session['rsh_direccion'] = request.POST['rsh_direccion']
                     return redirect(nuevoUsuario)
                 
                 else:
-                    new_password = crearPass()
-                    password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                    rol_nuevo_usuario = Rol.objects.get(id=request.POST['registro_rol'])
                     if request.FILES.get('rsh_pdf'):
                         rsh_beneficiario = request.FILES['rsh_pdf']
 
@@ -306,9 +326,11 @@ def delVaSessionUsuarios(request):
     del request.session['registro_rut']
     del request.session['registro_celular']
     del request.session['registro_email']
-    del request.session['registro_rol']
     del request.session['rsh_calificacion']
     del request.session['rsh_direccion']
+
+    if request.session['registro_rol']:
+        del request.session['registro_rol']
 
 
 
@@ -452,11 +474,106 @@ def editarUsuario(request, id_user):
 
 
 
+@loginRequired
+def nuevoBeneficiario(request):
+    if request.method == 'GET':
+        context = {
+                }
+        if request.session['usuario']['rol'] == 'Asistente':
+            return render(request, 'asistente/usuarios/nuevo_beneficiario.html', context)
+
+    elif request.method == 'POST':
+        errors_beneficiario = Usuario.objects.validador_beneficiario(request.POST)
+        errors_grupo_familiar = GrupoFamiliar.objects.validador_basico(request.POST)
+        rut_nuevo_registro = formRut(request.POST['registro_rut'])
+        rsh_beneficiario = ''
+        
+        #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
+        request.session['registro_nombres'] =  request.POST['registro_nombres']
+        request.session['registro_ap_paterno'] = request.POST['registro_ap_paterno']
+        request.session['registro_ap_materno'] = request.POST['registro_ap_materno']
+        request.session['registro_rut'] = request.POST['registro_rut']
+        request.session['registro_celular'] = request.POST['registro_celular']
+        request.session['registro_email'] = request.POST['registro_email']
+        request.session['rsh_calificacion'] = request.POST['rsh_calificacion']
+        request.session['rsh_direccion'] = request.POST['rsh_direccion']
+
+        if len(errors_beneficiario) > 0:
+            for key, value in errors_beneficiario.items():
+                messages.error(request, value);
+            return redirect(nuevoBeneficiario)
+
+        if len(errors_grupo_familiar) > 0:
+            for key, value in errors_grupo_familiar.items():
+                messages.error(request, value);
+            return redirect(nuevoBeneficiario)
+
+        #Si el rut ya se encuentra registrado
+        elif Usuario.objects.filter(rut=int(rut_nuevo_registro['rut'])).exists():
+            errors_beneficiario['existe_registro'] = f"El usuario con RUT {request.POST['registro_rut']} ya se encuentra registrado."; 
+            for key, value in  errors_beneficiario.items():
+                messages.error(request, value);
+            return redirect(nuevoUsuario)
+
+        else:
+            new_password = crearPass()
+            password_encryp = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+            rol_beneficiario = Rol.objects.get(nombre = 'Beneficiario')
+            if request.FILES.get('rsh_pdf'):
+                rsh_beneficiario = request.FILES['rsh_pdf']
+
+            new_user = Usuario.objects.create(
+                                        nombres = request.POST['registro_nombres'],
+                                        apellido_paterno = request.POST['registro_ap_paterno'],
+                                        apellido_materno = request.POST['registro_ap_materno'],
+                                        rut = int(rut_nuevo_registro['rut']),
+                                        dv = rut_nuevo_registro['dv'],
+                                        imagen = '',
+                                        celular = request.POST['registro_celular'],
+                                        email = request.POST['registro_email'],
+                                        contrasena = password_encryp,
+                                        rol = rol_beneficiario,
+                                        estado= 1
+                                        )
+            sendWelcomeMail(new_user, new_password)
+
+            new_grupo_familiar = GrupoFamiliar.objects.create(
+                                        calif_soc_eco = request.POST['rsh_calificacion'],
+                                        direccion = request.POST['rsh_direccion'],
+                                        rsh_archivo = rsh_beneficiario,
+                                        estado = 1
+                                        )
+            new_beneficiario = Beneficiario.objects.create(
+                                        grupo_familiar = new_grupo_familiar,
+                                        usuario = new_user,
+                                        estado = 1
+                                        )
+            messages.success(request, f"Nuevo usuario beneficiario registrado con exito.")
+    delVaSessionUsuarios(request)
+    return redirect(usuarios)
+
+
+
+def miPerfil(request, id_user):
+    if 'usuario' not in request.session:
+        return redirect('error404')
+
+    usuario = Usuario.objects.get(id=id_user)
+
+    if request.method == 'GET':
+        context = {
+                'usuario':  usuario,
+                }
+        return render(request, 'mi_perfil.html', context)
+
+
+
 def editarPerfil(request, id_user):
     if 'usuario' not in request.session:
         return redirect('error404')
 
     usuario = Usuario.objects.get(id=id_user)
+
     if request.method == 'GET':
         context = {
                 'usuario':  usuario,
@@ -464,26 +581,60 @@ def editarPerfil(request, id_user):
         return render(request, 'editar_perfil.html', context)
 
     elif request.method == 'POST':
-        usuario.nombres = request.POST['editar_nombres']
-        usuario.apellido_paterno = request.POST['editar_ap_paterno']
-        usuario.apellido_materno = request.POST['editar_ap_materno']
+        errors = Usuario.objects.validador_basico(request.POST)
+
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect(editarPerfil, id_user)
+
+        usuario.nombres = request.POST['registro_nombres']
+        usuario.apellido_paterno = request.POST['registro_ap_paterno']
+        usuario.apellido_materno = request.POST['registro_ap_materno']
         #usuario.imagen = imagen_usuario,
-        usuario.celular = request.POST['editar_celular']
-        usuario.email = request.POST['editar_email'] 
+        usuario.celular = request.POST['registro_celular']
+        usuario.email = request.POST['registro_email'] 
         usuario.save()
 
-    return redirect("home")
+    return redirect(editarPerfil, id_user)
 
+
+
+def cambiarContrasena(request, id_user):
+    if 'usuario' not in request.session:
+        return redirect('error404')
+
+    if request.method == 'GET':
+        return render(request, 'cambiar_contrasena.html')
+
+    elif request.method == 'POST':
+        usuario = Usuario.objects.get(id=id_user)
+        if bcrypt.checkpw(request.POST['contrasena_actual'].encode(), usuario.contrasena.encode()):
+            if request.POST['contrasena_nueva'] == request.POST['contrasena_confirmacion']:
+                usuario.contrasena = bcrypt.hashpw(request.POST['contrasena_nueva'].encode(), bcrypt.gensalt()).decode()
+                sendCambioContrasenaMail(request)
+                messages.success(request, f"Contraseña cambiada con exito, enviaremos un correo a { usuario.email } con la confirmación.")
+            else:
+                messages.error(request, f"Las contraseñas nueva y su confirmación no son iguales.")
+                return redirect(cambiarContrasena)
+        else:
+            messages.error(request, f"La contraseña ingresada no coincide con la actual.")
+            return redirect(cambiarContrasena)       
+    
+    return redirect(miPerfil)
 
 
 @loginRequired
 def precioGas(request):
     precio = PrecioGas.objects.get(estado=1)
     context = {
-            'precio_gas' : precio,     
-    }
+                'precio_gas' : precio,     
+        }
+    if request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
+        return render(request, 'admin/configuracion/precio_gas.html', context)
+    elif request.session['usuario']['rol'] == 'Asistente':
+        return render(request, 'asistente/configuracion/precio_gas.html', context)
 
-    return render(request, 'admin/configuracion/precio_gas.html', context)
 
 
 @loginRequired
@@ -529,14 +680,18 @@ def nuevoPrecio(request):
         return redirect(precioGas)
 
 
+
 @loginRequired
 def descuentoAplicable(request):
     descuentos = DescuentoAplicable.objects.all()
     context = {
             'descuentos' : descuentos,     
     }
+    if request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
+        return render(request, 'admin/configuracion/descuento_aplicable.html', context)
+    elif request.session['usuario']['rol'] == 'Asistente':
+        return render(request, 'asistente/configuracion/descuento_aplicable.html', context)
 
-    return render(request, 'admin/configuracion/descuento_aplicable.html', context)
 
 
 @loginRequired
@@ -606,15 +761,17 @@ def eliminarDescuento(request, id_descuento):
     return redirect(descuentoAplicable)
 
 
+
 @loginRequired
 def cantConvenios(request):
     cant_convenios = CantidadConvenio.objects.get(estado=1)
     context = {
             'cant_convenios' : cant_convenios,     
-            'hola' : 'holaaaaa'
     }
-
-    return render(request, 'admin/configuracion/cantidad_convenios.html', context)
+    if request.session['usuario']['rol'] == 'Administrador' or request.session['usuario']['rol'] == 'Director':
+        return render(request, 'admin/configuracion/cantidad_convenios.html', context)
+    elif request.session['usuario']['rol'] == 'Asistente':
+        return render(request, 'asistente/configuracion/cantidad_convenios.html', context)
 
 
 
@@ -669,6 +826,7 @@ def nuevoHogar(request, id_user):
     return render(request, 'registro_nuevo_hogar.html', context)
 
 
+
 def error404(request):
     return render(request, '404.html')
 
@@ -681,30 +839,51 @@ def crearPass():
 
     return contrasena
 
+
+
 def quitarMiles(numero):
     numero = re.sub("\.","",numero)
     return int(numero)
 
+
+
+
 def sendWelcomeMail(user, password):
-    
     context = {
         'nombre'  : f"{user}",
         'rut'     : user.rut,
         'password': password,
         'mail'    : user.email
     }
-
     template = get_template('correos/bienvenida.html')
     content = template.render(context)
-
     email = EmailMultiAlternatives(
-        'Un correo de prueba',
-        'DIDECO COELEMU',
-        settings.EMAIL_HOST_USER,
-        [user.email],#destinatarios
-        #CC=[], se puede definir con copia a 
-    )
+                                    'Bienvenida aplicación DIDECO',
+                                    'DIDECO COELEMU',
+                                    settings.EMAIL_HOST_USER,
+                                    [user.email],#destinatarios
+                                    #CC=[], se puede definir con copia a 
+                                )
+    email.attach_alternative(content, 'text/html')#agregar el contenido al correo
+    email.send()
 
+
+
+
+def sendCambioContrasenaMail(user):
+    context = {
+        'nombre'  : f"{user}",
+        'mail'    : user.email
+    }
+    template = get_template('correos/cambio_contrasena.html')
+    content = template.render(context)
+    email = EmailMultiAlternatives(
+                                    'Cambio de contraseña',
+                                    'DIDECO COELEMU',
+                                    settings.EMAIL_HOST_USER,
+                                    [user.email],#destinatarios
+                                    #CC=[], se puede definir con copia a 
+                                )
     email.attach_alternative(content, 'text/html')#agregar el contenido al correo
     email.send()
 
