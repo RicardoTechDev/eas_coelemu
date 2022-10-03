@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Convenios{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Convenios{% endblock %}
+{% block content_header_actual%}Convenios{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<div class="row mb-3 ml-1">
+    <!-- Button trigger modal -->
+    <a href="{% url 'nuevoConvenio' %}">
+        <button type="button" class="btn bg-gradient-primary">
+            <i class="fas fa-plus"></i>
+            Nuevo Convenio
+        </button>
+    </a>
+</div>
+<!-- Tabla de convenios -->
+<table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+    <thead class="bg-success">
+        <tr>
+            <th>Código</th>
+            <th>Fecha</th>
+            <th>Beneficiario</th>
+            <th>Autoriza</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for convenio in convenios %}
+        <tr>
+            <td>{{ convenio.id }}</td>
+            <td>{{ convenio.created_at }}</td>
+            <td>{{ convenio.beneficiario.usuario }}</td>
+            <td>{{ convenio.usuario }}</td>
+            <td>
+                {% if convenio.estado == 0 %}
+                <span class="badge bg-warning">Sin descargar</span>
+                {% endif %}
+                {% if convenio.estado == 1 %}
+                <span class="badge bg-success">descargado</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'verConvenio' convenio.id %}" class="btn btn-primary">Ver</a>
+                <a href="{% url 'editarConvenio' convenio.id %}" class="btn btn-primary">Editar</a>
+                <a href="{% url 'eliminarConvenio' convenio.id %}" class="btnDelete btn btn-danger">Eliminar</a>
+                <a href="{% url 'convenioPdf' convenio.id 1 %}" class="btn btn-success">Descargar Convenio</a>
+            
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- ./Tabla de solicitudes -->
+{% endblock %}
+{% block scripts %}
+<script>
+    /*DeleteSwal(document.title, "Hola mundo.");*/
+    const btnsDelete=document.querySelectorAll('.btnDelete');
+
+    btnsDelete.forEach(btn => {
+        btn.addEventListener('click',function(event){
+            event.preventDefault();
+            url = event.target.href;
+            DeleteSwal("¿Seguro desea eliminar este convenio?", "",url);
+        })
+    });
+
+</script>
+{% endblock %}

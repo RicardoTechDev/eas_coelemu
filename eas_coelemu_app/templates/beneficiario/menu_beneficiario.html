@@ -1,0 +1,26 @@
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
+            with font-awesome or any other icon font library -->
+        <li class="nav-item">
+            <a href="{% url 'misSolicitudes' %}" class="nav-link">
+                <i class='nav-icon fas fa-table'></i>
+                <p>Solicitudes</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'convenios' %}" class="nav-link">
+                <i class='nav-icon fas fa-table'></i>
+                <p>Convenios</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'integrantesGrupoFamiliar' request.session.usuario.id %}" class="nav-link">
+                <i class='fas fa-users'></i>
+                <p>Integrantes Grupo Familiar</p>
+            </a>
+        </li>
+    </ul>
+</nav>
+<!-- /.sidebar-menu -->

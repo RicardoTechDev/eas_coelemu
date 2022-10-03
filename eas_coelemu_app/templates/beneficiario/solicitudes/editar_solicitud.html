@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Editar solicitud de convenio{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Editar solicitud{% endblock %}
+{% block content_header_actual%}<a href="{% url 'misSolicitudes' %}">Mis Solicitudes</a> / Editar Solicitud{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-info">
+                    <div class="card-header p-2">
+                        <h6>Solicitud N° {{ solicitud.id }} del {{ solicitud.created_at }}</h6>
+                    </div><!-- /.card-header -->
+                    <div class="card-body container-fluid">
+                        <p>Le recordamos que para evitar retrasos en su solicitud su Cartola del RSH no debe superar los
+                            30 días de antiguedad.</p>
+                        <form class="mt-3" action="{% url 'editarSolicitud' solicitud.id %}" method="POST" id="form_nuevo_descuento">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="fecha_solicitud" class="col-sm-3 col-form-label">Nueva Fecha Solicitud</label>
+                                        <input type="text" class="form-control" placeholder="fecha_solicitud" id="fecha_solicitud"
+                                            name="fecha_solicitud" value="{{ fecha }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-calendar-alt"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_pdf" class="col-sm-3 col-form-label">RSH (archivo
+                                            pdf)</label>
+                                        <a class="col-sm-9 col-form-label" href="/media/{{ grupo_familiar.rsh_archivo }}" target="_blank">
+                                            {{grupo_familiar.rsh_archivo }}
+                                        </a>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        Si desea actualizar la cartola del RSH debe hacerlo en su perfil de usuario.
+                                    </div>
+                                    <div class="row mt-3 float-right">
+                                        <button type="submit" id="submit_nueva_solicitud" class="btn btn-primary">
+                                            Actualizar
+                                        </button>
+                                        <a href="{% url 'misSolicitudes' %}" id="cancelar_nueva_solicitud"class="btn btn-primary ml-1">
+                                            Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

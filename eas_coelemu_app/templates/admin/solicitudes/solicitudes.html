@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Solicitudes{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Solicitudes{% endblock %}
+{% block content_header_actual%}Solicitudes{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<div class="row mb-3 ml-1">
+</div>
+<!-- Tabla de solicitudes -->
+<table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+    <thead class="bg-info">
+        <tr>
+            <th>Código</th>
+            <th>Fecha solicitud</th>
+            <th>Solicitante</th>
+            <th>Validador</th>
+            <th>Observación</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for solicitud in solicitudes %}
+        <tr>
+            <td>{{ solicitud.id }}</td>
+            <td>{{ solicitud.created_at }}</td>
+            <td>{{ solicitud.beneficiario.usuario }}</td>
+            <td>{% if solicitud.usuario == NULL %}
+                -
+                {% else %}
+                {{ solicitud.usuario }}
+                {% endif %}</td>
+            <td>
+                {% if solicitud.observacion == NULL %}
+                Sin Observaciones
+                {% else %}
+                {{ solicitud.observacion }}
+                {% endif %}
+            </td>
+            <td>
+                {% if solicitud.estado == 0 %}
+                <span class="badge bg-warning">Pendiente</span>
+                {% endif %}
+                {% if solicitud.estado == 1 %}
+                <span class="badge bg-success">Aceptada</span>
+                {% endif %}
+                {% if solicitud.estado == 2 %}
+                <span class="badge bg-danger">Rechazada</span>
+                {% endif %}
+                {% if solicitud.estado == 3 %}
+                <span class="badge bg-info">Convenio Generado</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'verSolicitud' solicitud.id %}" class="btn btn-primary">Ver</a>
+                {% if solicitud.estado == 1 %}
+                <a href="{% url 'generarConvenio' solicitud.id %}" class="btn btn-success">Generar Convenio</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- ./Tabla de solicitudes -->
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

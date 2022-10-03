@@ -53,12 +53,12 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'editarbeneficiario'   beneficiario.id%}">
+                    <a href="{% url 'editarbeneficiario'   beneficiario.id %}">
                         <button type="button" class="btn btn-primary">
                             Editar
                         </button>
                     </a>
-                    <a href="#">
+                    <a href="{% url 'verBeneficiario' beneficiario.id %}">
                         <button type="button" class="btn btn-primary">
                             Ver
                         </button>

@@ -12,7 +12,7 @@
         <a href="{% url 'nuevoUsuario' %}">
             <button type="button" class="btn bg-gradient-primary">
                 <i class='fas fa-user-plus'></i>
-                Nuevo usuario
+                Nuevo Usuario
             </button>
         </a>
     </div>
@@ -39,8 +39,8 @@
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.celular }}</td>
                 <td>{{ usuario.rol }}</td>
-                <td>{{ usuario.created_at }}</td>
-                <td>{{ usuario.updated_at }}</td>
+                <td>{{ usuario.created_at}}</td>
+                <td>{{ usuario.updated_at}}</td>
                 <td class="text-center">
                     {% if usuario.estado == 1%}
                     <a href="{% url 'cambiarEstadoUsuario' usuario.id %}">
@@ -57,12 +57,12 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'editarUsuario'  usuario.id%}">
+                    <a href="{% url 'editarUsuario'  usuario.id %}">
                         <button type="button" class="btn btn-primary">
                             Editar
                         </button>
                     </a>
-                    <a href="#">
+                    <a href="{% url 'verUsuario' usuario.id %}">
                         <button type="button" class="btn btn-primary">
                             Ver
                         </button>

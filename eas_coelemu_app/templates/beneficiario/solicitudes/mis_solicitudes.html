@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Mis Solicitudes{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Mis Solicitudes{% endblock %}
+{% block content_header_actual%}Mis Solicitudes{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<div class="row mb-3 ml-1">
+    <!-- Button trigger modal -->
+    <a href="{% url 'nuevaSolicitud' %}">
+        <button type="button" class="btn bg-gradient-primary">
+            <i class="fas fa-plus"></i>
+            Nueva Solicitud
+        </button>
+    </a>
+</div>
+<!-- Tabla de solicitudes -->
+<table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+    <thead class="bg-info">
+        <tr>
+            <th>Código</th>
+            <th>Fecha solicitud</th>
+            <th>Observación</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for solicitud in solicitudes %}
+        <tr>
+            <td>{{ solicitud.id }}</td>
+            <td>{{ solicitud.created_at }}</td>
+            <td>
+                {% if solicitud.observacion == NULL %}
+                Sin Observaciones
+                {% else %}
+                {{ solicitud.observacion }}
+                {% endif %}
+            </td>
+            <td>
+                {% if solicitud.estado == 0 %}
+                <span class="badge bg-warning">Pendiente</span>
+                {% endif %}
+                {% if solicitud.estado == 1 %}
+                <span class="badge bg-success">Aceptada</span>
+                {% endif %}
+                {% if solicitud.estado == 2 %}
+                <span class="badge bg-danger">Rechazada</span>
+                {% endif %}
+                {% if solicitud.estado == 3 %}
+                <span class="badge bg-info">Convenio Generado</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if solicitud.estado == 0 %}
+                <a href="{% url 'editarSolicitud' solicitud.id %}" class="btn btn-primary">Editar</a>
+                <a href="{% url 'eliminarSolicitud' solicitud.id %}" class="btnDelete btn btn-danger">Eliminar</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- ./Tabla de solicitudes -->
+{% endblock %}
+{% block scripts %}
+<script>
+    /*DeleteSwal*/
+    const btnsDelete = document.querySelectorAll('.btnDelete');
+
+    btnsDelete.forEach(btn => {
+        btn.addEventListener('click', function (event) {
+            event.preventDefault();
+            url = event.target.href;
+            DeleteSwal("¿Seguro desea eliminar esta solicitud?", "", url);
+        })
+    });
+
+</script>
+{% endblock %}

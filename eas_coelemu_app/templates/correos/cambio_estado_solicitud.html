@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de solicitud</title>
+</head>
+<body>
+    <img src="{% static 'img/gas_mas_basrato.jpg' %}" alt="" width="60%">
+    <h3>Hola {{ nombre }}, este es un correo de la aplicación web de apoyo a la entega de subsidios de gas.</h3>
+    <p>Queremos informarle que se acaba de realizar un cambio en el estado de su solicitud presentada el {{ fecha_solicitud }}.</p>
+    <p>La solicitud presentada a cambiado a "{{ estado }}", para conocer mayores detalle favor visitar la aplicación web o dirigirse a la oficina de DIDECO.</p>
+    <br>
+    <p>Saludos.</p>
+</body>
+</html>

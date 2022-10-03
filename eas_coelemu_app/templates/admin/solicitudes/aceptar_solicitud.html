@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Aceptar solicitud de convenio{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Aceptar Solicitud{% endblock %}
+{% block content_header_actual%}<a href="{% url 'solicitudes' %}">Solicitudes</a> / Aceptar Solicitud</a>{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-info">
+                    <div class="card-header p-2">
+                        <h6>Solicitud N° {{ solicitud.id }} del {{ solicitud.created_at }}</h6>
+                    </div><!-- /.card-header -->
+                    <div class="card-body container-fluid">
+                        <form class="mt-3" action="{% url 'aceptarSolicitud' solicitud.id %}" method="POST" id="form_nuevo_descuento"> 
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="fecha_solicitud" class="col-sm-3 col-form-label">Fecha Solicitud</label>
+                                        <input type="text" class="form-control" placeholder="fecha_solicitud" id="fecha_solicitud"
+                                            name="fecha_solicitud" value="{{ solicitud.created_at }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-calendar-alt"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="solicitud_estado" class="col-sm-3 col-form-label">Estado</label>
+                                        <input type="text" class="form-control" placeholder="solicitud_estado" id="solicitud_estado"
+                                            name="solicitud_estado" 
+                                            value="{{estado_solicitud}}" 
+                                            readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-file-invoice"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="observacion_solicitud" class="col-sm-3 col-form-label">Observación</label>
+                                        <textarea id="inputDescription" class="form-control" rows="4" placeholder="observacion_solicitud" id="observacion_solicitud" name="observacion_solicitud">Solicitud aceptada sin observaciones.</textarea>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="beneficiario_solicitud" class="col-sm-3 col-form-label">Beneficiario</label>
+                                        <input type="text" class="form-control" placeholder="beneficiario_solicitud" id="beneficiario_solicitud"
+                                            name="beneficiario_solicitud" value="{{ solicitud.beneficiario.usuario }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="calif_soc_eco" class="col-sm-3 col-form-label">Calificación Soc.</label>
+                                        <input type="text" class="form-control" placeholder="calif_soc_eco" id="calif_soc_eco"
+                                            name="calif_soc_eco" value="{{ beneficiario.grupo_familiar.calif_soc_eco }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-file-invoice"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_pdf" class="col-sm-3 col-form-label">RSH (archivo
+                                            pdf)</label>
+                                        <a class="col-sm-9 col-form-label" href="/media/{{ grupo_familiar.rsh_archivo }}" target="_blank">
+                                            {{grupo_familiar.rsh_archivo }}
+                                        </a>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <div class="info-box">
+                                            {% if cant_convenios == cant_max_convenios%}
+                                            <span class="info-box-icon bg-danger"><i class="far fa-copy"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Convenios entregados en este mes.</span>
+                                                <span class="info-box-number">{{ cant_convenios }}</span>
+                                            </div> 
+                                            {% else %}
+                                            <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Convenios entregados en este mes.</span>
+                                                <span class="info-box-number">{{ cant_convenios }}</span>
+                                            </div> 
+                                            {% endif %} 
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3 float-right">
+                                        {% if solicitud.estado == 0  %}
+                                        <button type="submit" id="submit_rechazar_solicitud" class="btn btn-primary">
+                                        Aceptar Solicitud
+                                        </button>
+                                        {% endif %}
+                                        <a href="{% url 'solicitudes' %}" id="cancelar"class="btn btn-primary ml-1">
+                                            Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

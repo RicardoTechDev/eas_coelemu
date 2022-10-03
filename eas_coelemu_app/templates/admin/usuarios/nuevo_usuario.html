@@ -91,7 +91,7 @@
                                         </select>
                                         <div class="input-group-append"> 
                                             <div class="input-group-text">
-                                            <span class="fas fa-envelope"></span>
+                                                <span class="fas fa-user"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@
                                 <div class="col-md-2 mx-auto">
                                     <!-- Imagen hogar -->
                                     <div class="form-group text-center">
-                                        <img src="{% static 'img/hogar.png' %}"  class="img-fluid crop" width="30%">
+                                        <img src="{% static 'img/hogar.png' %}"  class="img-fluid crop" width="40%">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mx-auto">
@@ -146,6 +146,9 @@
                                 <div class="col-md-6">
                                     <div class="row mt-3 float-right">
                                         <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Registrar</button>
+                                        <a href="{% url 'usuarios' %}" id="cancelar_nueva_cantidad" class="btn btn-primary ml-1">
+                                            Cancelar
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-md-4">

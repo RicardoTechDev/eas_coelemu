@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convenio de gas licuado</title>
+    <link rel="stylesheet" href="{% static 'AdminLTE/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE/css/tempusdominus-bootstrap-4.min.css' %}">
+
+    <style>
+        .container{
+            margin: 50px 30px 0px 30px;
+            font: 14px sans-serif;
+        }
+        #titulo{
+            text-align: center;
+            margin: 20px;
+        }
+        #firmas{
+            text-align: center;
+        }
+        b{
+            font-size: 15px;
+        }
+        #iden-beneficiario{
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div id="titulo">
+            <h1>CONVENIO SUBSIDIO DE CARGA GAS LICUADO N° {{ convenio.id }}</h1>
+        </div>
+    </div>
+    
+    <p>En Coelemu a <b>{{ fecha }}</b>, comparece a la celebración del presente convenio,  
+    por una parte, don(ña) <b>{{ convenio.beneficiario.usuario }}</b> cédula de 
+    identidad N° <b>{{ convenio.beneficiario.usuario.rut }}-{{ convenio.beneficiario.usuario.dv }}</b> y por la otra la Ilustre Municipalidad de Coelemu representada por 
+    su alcalde don ALEJANDRO PEDREROS URRUTIA, cédula de identidad N° 10.495.258-5, los cuales vienen 
+    en suscribir el presente convenio de subsidio a la carga de gas licuado. </p>
+    <p>Que, con fecha 26 de enero de 2022 se aprobó el Decreto Alcaldicio Exento N° 163 que sanciona 
+    el Reglamento del Subsidio a la carga de gas licuado.</p>
+    <p>Que, con fecha 30 de marzo de 2022 se aprobó Decreto Alcaldicio Exento N° 503 que Modifica el 
+    Reglamento del Subsidio a la carga de gas licuado, para otorgar subsidio forma anual.</p>
+    <p>Que, por Decreto Alcaldicio Exento N°201, de fecha 02 de febrero de 2022 que delega la facultad 
+    de firmar por orden del alcalde, el presente convenio, a doña Camila Pedreros Hernández, Directora 
+    Desarrollo Comunitario de la I. Municipalidad de Coelemu.</p>
+    <div class="iden-beneficiario">
+        <h3>IDENTIFICACIÓN DEL SUBSIDIADO:</h3>
+        <p>Nombre jefe de hogar o beneficiario: <b>{{ convenio.beneficiario.usuario }}</b></p>
+        <p>Domicilio: <b>{{ convenio.beneficiario.grupo_familiar.direccion }}</b></p>
+        <p>RUT: <b>{{ convenio.beneficiario.usuario.rut }}-{{ convenio.beneficiario.usuario.dv }}</b></p>
+        <p>Teléfono: <b>{{ convenio.beneficiario.usuario.celular }}</b></p>
+        <p>RSH Calificación Socioeconómica: <b>{{convenio.beneficiario.grupo_familiar.calif_soc_eco}}</b></p>
+        <p>Descuento aplicable según % RSH: <b>{{ convenio.descuento_aplicado }}</b></p>
+        <p>Precio a pagar según descuento aplicable: <b>${{ convenio.precio }}</b></p>
+    </div>
+    <p>Que a don (a) <b>{{ convenio.beneficiario.usuario }}</b> será subsidiado con las 
+    limitaciones que establece el artículo 5° del Reglamento del Subsidio a la carga de gas licuado, siendo 
+    beneficiado con un máximo de <b>{{ cantidad_max_convenio.cantidad_convenios }}</b>, recargas de gas, por el periodo estipulado en párrafo primero, según 
+    disponibilidad de recargas con las que cuente el Municipio a la fecha de la entrega del subsidio.</p>
+    <p>El contribuyente se obliga a reembolsar un máximo de <b>{{ cantidad_max_convenio.cantidad_convenios }}</b> recargas de gas, las cuales se entregarán 
+    según lo establecido en el artículo 5 del Reglamento del Subsidio a la carga de gas licuado y cuyo valor de 
+    determinará en el momento que se requiera mensualmente el subsidio por el beneficiado, con un descuento 
+    según porcentaje RSH.</p>
+    <br>
+    <div id="firmas">
+    <p>_______________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _________________</p>
+    <p>FIRMA BENEFICIARIO &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FIRMA AUTORIZADA DIDECO</p>
+        
+    </div>
+</div>
+
+</body>
+</html>

@@ -12,7 +12,7 @@
         <a href="{% url 'nuevoDescuento' %}">
             <button type="button" class="btn bg-gradient-primary">
                 <i class="fas fa-percentage"></i>
-                Nuevo descuento
+                Nuevo Descuento
             </button>
         </a>
     </div>
@@ -33,14 +33,10 @@
                 <td>{{ descuento.calificacion_base }}% - {{ descuento.calificacion_tope }}%</td>
                 <td>{{ descuento.descuento }}%</td>
                 <td>{{ descuento.usuario }}</td>
-                <td>{{ descuento.updated_at }}</td>
+                <td>{{ descuento.updated_at}}</td>
                 <td>
-                    <a href="{% url 'editarDescuento' descuento.id %}" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Editar
-                    </a>    
-                    <a href="{% url 'eliminarDescuento' descuento.id %}" class="btnDelete btn btn-danger">
-                        <i class="fas fa-trash-alt"></i> Eliminar
-                    </a>
+                    <a href="{% url 'editarDescuento' descuento.id %}" class="btn btn-primary">Editar</a>    
+                    <a href="{% url 'eliminarDescuento' descuento.id %}" class="btnDelete btn btn-danger">Eliminar</a>
                 </td>
             </tr>
             {% endfor %}

@@ -10,51 +10,22 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-                <p>
-                    Convenios
-                    <i class="fas fa-angle-left right"></i>
-                </p>
+            <a href="{% url 'convenios' %}" class="nav-link">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <p>Convenios</p>
             </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                <a href="pages/tables/simple.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Historico</p>
-                </a>
-                </li>
-                <li class="nav-item">
-                <a href="{% url 'precioGas' %}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Precio Gas</p>
-                </a>
-                </li>
-                <li class="nav-item">
-                <a href="{% url 'descuentoAplicable' %}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Descuento Aplicable</p>
-                </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'cantConvenios' %}" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Convenios por Beneficiario</p>
-                    </a>
-                </li>
-            </ul>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-                <p>
-                    Solicitudes
-                    <i class="fas fa-angle-left right"></i>
-                </p>
+            <a href="{% url 'solicitudes' %}" class="nav-link">
+                <i class="fas fa-file-invoice"></i>
+                <p>Solicitudes</p>
             </a>
-            <ul class="nav nav-treeview">
-                
-            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'informeCantConvenios' %}" class="nav-link">
+                <i class="fas fa-file-invoice"></i>
+                <p>Informes</p>
+            </a>
         </li>
     </ul>
 </nav>

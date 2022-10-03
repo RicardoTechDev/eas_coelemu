@@ -1,13 +1,12 @@
 from django.urls import path
 from . import views
 
-
-
 urlpatterns = [
     path('', views.login, name='login'),
     path('config/admin', views.config, name='config'),
     path('logout', views.logout, name='logout'),
     path('home', views.home, name='home'),
+    path('recuperar-contrasena', views.recuperarContrasena, name='recuperarContrasena'),
     path('editar-perfil/<int:id_user>', views.editarPerfil, name='editarPerfil'),
     path('mi-perfil/<int:id_user>', views.miPerfil, name='miPerfil'),
     path('cambiar-contrasena/<int:id_user>', views.cambiarContrasena, name='cambiarContrasena'),
@@ -15,9 +14,11 @@ urlpatterns = [
     path('usuarios/nuevo_usuario', views.nuevoUsuario, name='nuevoUsuario'),
     path('usuarios/<int:id_user>', views.cambiarEstadoUsuario, name='cambiarEstadoUsuario'),
     path('usuarios/editar_usuario/<int:id_user>', views.editarUsuario, name='editarUsuario'),
+    path('usuarios/ver_usuario/<int:id_user>', views.verUsuario, name='verUsuario'),
     path('beneficiarios', views.usuarios, name='beneficiarios'),
     path('beneficiarios/nuevo_beneficiario', views.nuevoBeneficiario, name='nuevoBeneficiario'),
     path('beneficiarios/editar_beneficiario/<int:id_user>', views.editarUsuario, name='editarbeneficiario'),
+    path('beneficiarios/ver-beneficiario/<int:id_user>', views.verUsuario, name='verBeneficiario'),
     path('precio-gas', views.precioGas, name='precioGas'),
     path('precio-gas/nuevo_precio', views.nuevoPrecio, name='nuevoPrecio'),
     path('descuento-aplicable', views.descuentoAplicable, name='descuentoAplicable'),
@@ -26,8 +27,28 @@ urlpatterns = [
     path('eliminar-descuento/<int:id_descuento>', views.eliminarDescuento, name='eliminarDescuento'),
     path('cantidad-convenios', views.cantConvenios, name="cantConvenios"),
     path('nuevo-cantidad-convenios', views.nuevoCantConvenios, name='nuevoCantConvenios'),
-    path('nuevo-hogar/<int:id_user>', views.nuevoHogar, name='nuevoHogar'),
+    path('solicitudes', views.solicitudes, name='solicitudes'),
+    path('solicitudes/ver-solicitud/<int:id_solicitud>', views.verSolicitud, name='verSolicitud'),
+    path('solicitudes/rechazar-solicitud/<int:id_solicitud>', views.rechazarSolicitud, name='rechazarSolicitud'),
+    path('solicitudes/aceptar-solicitud/<int:id_solicitud>', views.aceptarSolicitud, name='aceptarSolicitud'),
+    path('solicitudes/generar-convenio/<int:id_solicitud>', views.generarConvenio, name='generarConvenio'),
+    path('convenios', views.convenios, name='convenios'),
+    path('convenios/pdf/<int:id_convenio>/<int:descargar>', views.convenioPdf, name='convenioPdf'),
+    path('convenios/eliminar-convenio/<int:id_convenio>', views.eliminarConvenio, name='eliminarConvenio'),
+    path('convenios/nuevo-convenio', views.nuevoConvenio, name='nuevoConvenio'),
+    path('convenios/ver-convenio/<int:id_convenio>', views.verConvenio, name='verConvenio'),
+    path('convenios/editar-convenio/<int:id_convenio>', views.editarConvenio, name='editarConvenio'),
+    path('integrantes-grupo-familiar-por-beneficiario', views.beneficiariosGruposFamiliares, name='beneficiariosGruposFamiliares'),
+    path('informes/cantidad-convenios', views.informeCantConvenios, name='informeCantConvenios'),
     path('404', views.error404, name='error404'),
-    
+    #URLs usuario Beneficiario
+    path('integrantes-grupo-familiar/<int:id_usuario_beneficiario>', views.integrantesGrupoFamiliar, name='integrantesGrupoFamiliar'),
+    path('nuevo-integrante/<int:id_usuario_beneficiario>', views.nuevoIntegrante, name='nuevoIntegrante'),
+    path('editar-integrante/<int:id_integrante>', views.editarIntegrante, name='editarIntegrante'),
+    path('eliminar-integrante/<int:id_integrante>', views.eliminarIntegrante, name='eliminarIntegrante'),
+    path('mis-solicitudes', views.misSolicitudes, name='misSolicitudes'),
+    path('nueva-solicitud', views.nuevaSolicitud, name='nuevaSolicitud'),
+    path('editar-solicitud/<int:id_solicitud>', views.editarSolicitud, name='editarSolicitud'),
+    path('eliminar-solicitud/<int:id_solicitud>', views.eliminarSolicitud, name='eliminarSolicitud'),
     
 ]

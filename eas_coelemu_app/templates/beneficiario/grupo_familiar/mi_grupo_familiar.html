@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Integrantes Grupo Familiar{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Integrantes Grupo Familiar{% endblock %}
+{% block content_header_actual%}
+    {% if request.session.usuario.rol == 'Beneficiario' %}
+    Integrantes Grupo Familiar
+    {% else %}
+    <a href="{% url 'beneficiariosGruposFamiliares' %}">Grupos Familiares</a> / Integrantes Grupo Familiar
+    {% endif %}
+{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<div class="row mb-3 ml-1">
+    <!-- Button trigger modal -->
+    <a href="{% url 'nuevoIntegrante' usuario.id %}">
+        <button type="button" class="btn bg-gradient-primary">
+            <i class='fas fa-user-plus'></i>
+            Nuevo Integrante
+        </button>
+    </a>
+</div>
+<!-- Tabla de solicitudes -->
+<table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+    <thead class="bg-warning">
+        <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Parentesco</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for integrante in integrantes_grupo_familiar %}
+        <tr>
+            <td>{{ integrante.nombres }} {{ integrante.apellido_paterno }} {{ integrante.apellido_materno }}</td>
+            <td>{{ integrante.rut }}-{{ integrante.dv }}</td>
+            <td>{{ integrante.parentesco }}</td>
+            <td>
+                <a href="{% url 'editarIntegrante' integrante.id %}" class="btn btn-primary">Editar</a>
+                <a href="{% url 'eliminarIntegrante' integrante.id %}" class="btnDelete btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- ./Tabla de solicitudes -->
+{% endblock %}
+{% block scripts %}
+<script>
+    /*DeleteSwal*/
+    const btnsDelete = document.querySelectorAll('.btnDelete');
+
+    btnsDelete.forEach(btn => {
+        btn.addEventListener('click', function (event) {
+            event.preventDefault();
+            url = event.target.href;
+            DeleteSwal("¿Seguro desea eliminar este integrante?", "", url);
+        })
+    });
+
+</script>
+{% endblock %}

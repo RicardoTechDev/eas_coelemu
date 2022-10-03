@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Informe Convenios Entregados{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Informe Convenios Entregados{% endblock %}
+{% block content_header_actual%}Informe Convenios Entregados{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-success">
+                    <div class="card-body container-fluid">
+                        <form class="mt-3" action="{% url 'informeCantConvenios' %}" method="POST" id="form_nuevo_descuento">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="fecha_inicial" class="col-sm-3 col-form-label">Fecha Inicial</label>
+                                        <input type="date" class="form-control" placeholder="fecha" id="fecha_inicial"
+                                            name="fecha_inicial">
+                                        <div class="input-group-append">
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="fecha_termino" class="col-sm-3 col-form-label">Fecha Termino</label>
+                                        <input type="date" class="form-control" placeholder="fecha" id="fecha_termino"
+                                            name="fecha_termino">
+                                        <div class="input-group-append">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3 float-right">
+                                        <button type="submit" id="submit_nuevo_convenio" class="btn btn-primary">
+                                            Generar Informe
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

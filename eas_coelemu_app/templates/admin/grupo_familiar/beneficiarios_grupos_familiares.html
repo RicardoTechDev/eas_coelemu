@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Grupos Familiares{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Grupos Familiares{% endblock %}
+{% block content_header_actual%}Grupos Familiares{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+    <div class="row mb-3 ml-1">
+    </div>
+    <!-- Tabla de usuarios -->
+    <table id="tabla" class="table table-sm table-bordered table-striped table-hover">
+        <thead class="bg-warning">
+        <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Email</th>
+            <th>Celular</th>
+            <th>Fecha registro</th>
+            <th>Opciones</th>
+        </tr>
+        </thead>
+        <tbody> 
+            {% for beneficiario in beneficiarios %}
+            <tr>
+                <td>{{ beneficiario }}</td>
+                <td>{{ beneficiario.rut }}-{{beneficiario.dv}}</td>
+                <td>{{ beneficiario.email }}</td>
+                <td>{{ beneficiario.celular }}</td>
+                <td>{{ beneficiario.created_at }}</td>
+                <td>
+                    <a href="{% url 'integrantesGrupoFamiliar'   beneficiario.id %}">
+                        <button type="button" class="btn btn-primary">
+                            Grupo Familiar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- ./Tabla de usuarios -->
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

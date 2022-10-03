@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets_login/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bulma.css' %}" id="theme-styles"><!-- sweetalert2 -->
     <title>Bienvenido</title>
 </head>
 <body>
@@ -21,28 +22,30 @@
                     <img src="{% static 'assets_login/img/escudo.png' %}" width="80px" alt="">
                 </div>
                 <h2 class="fw-bold text-center py-2">Bienvenido</h2>
+                <p class="fw-bold text-center py-2">Aplicación de apoyo a la entrega de convenios de gas licuado.</p>
                 <!-- LOGIN -->
                 <div class="login-wrap p-lg-5 p-md-1">
                     <form action="{% url 'login' %}" method="POST">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="rut_login" class="form-label">Usuario(Rut)</label>
-                            <input type="text"  class="form-control" placeholder="11111111-1" id="rut_login" name="rut_login">
+                            <input type="text"  class="form-control" placeholder="11111111" id="rut_login" name="rut_login">
                         </div>
                         <div class="mb-3">
                             <label for="contrasena_login" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="contrasena_login" name="contrasena_login">
                         </div>
+                        <!-- 
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="connected" name="connected" >
                             <label for="connected" class="form-check-label">Recuerdame.</label>
-                        </div>
+                        </div>-->
                         <div class="d-grid"><!--d-grid para que el botón iniciar sesión abarque todo el ancho-->
                             <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                         </div>
                         <div class="my-3">
-                            <span>No tienes cuenta?<a href="#">Regístrate</a></span><br>
-                            <span><a href="#">Recuperar Contraseña</a></span>
+                            <!--<span>No tienes cuenta?<a href="#"> Pasos para obtenerla</a></span><br>-->
+                            <span><a href="{% url 'recuperarContrasena' %}">Olvidé la Contraseña</a></span>
                         </div>
                     </form>
                 </div>
@@ -52,6 +55,7 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
     <script src="{% static 'js/toastr.min.js' %}"></script>
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
     <script>
         $(document).ready(function(){
             toastr.options = {

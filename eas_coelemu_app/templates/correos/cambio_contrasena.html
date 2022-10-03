@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,8 +8,10 @@
     <title>Bienvenido/a</title>
 </head>
 <body>
-    <h1>Hola {{ nombre }}, este es un correo la aplicación web de apoyo a la entega de subsidios de gas.</h1>
-    <p>Queremos informarte que acabas de realizar el cambio de contraseña con exito.</p>
+    <img src="{% static 'img/gas_mas_basrato.jpg' %}" alt="" width="60%">
+    <h3>Hola {{ nombre }}, este es un correo de la aplicación web de apoyo a la entega de subsidios de gas.</h3>
+    <p>Queremos informarle que acaba de realizar el cambio de contraseña de acceso con exito.</p>
+    <p>Esta es una notificación automática. Si recientemente no ha cambiado su contraseña, o sospecha que su Cuenta de Usuario puede haber sido utilizada por otra persona, por favor, comuníquese inmediatamente con nosotros.</p>
     <br>
     <p>Saludos.</p>
 </body>

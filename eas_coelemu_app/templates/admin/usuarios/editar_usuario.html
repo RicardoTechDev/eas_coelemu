@@ -23,7 +23,7 @@
                                 <div class="col-md-2 mx-auto">
                                     <!-- Imagen usuario -->
                                     <div class="form-group text-center">
-                                        <img src="{% static 'img/usuario.png' %}"  class="img-fluid crop"  width="30%">
+                                        <img src="{% static 'img/usuario.png' %}"  class="img-fluid crop"  width="40%">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mx-auto">
@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="registro_rut" class="col-sm-3 col-form-label">RUT</label>
-                                        <input type="text" class="form-control" placeholder="11111111-1" id="registro_rut" name="registro_rut" value="{{ usuario_rut }}" readonly>
+                                        <input type="text" class="form-control" id="registro_rut" name="registro_rut" value="{{ usuario_rut }}" >
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-id-card"></span>
@@ -133,9 +133,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="input-group mb-3">
+                                    <div class="input-group mb-3" id="carga_archivo_rsh">
                                         <label for="rsh_pdf" class="col-sm-3 col-form-label">RSH (archivo pdf)</label>
-                                        <input type="file" class="" placeholder="" id="rsh_pdf" name="rsh_pdf">                                    
+                                        {% if grupo_familiar.rsh_archivo %}
+                                            <a href="/media/{{ grupo_familiar.rsh_archivo }}" id="archivo_actual" target="_blank">
+                                                Actual:{{grupo_familiar.rsh_archivo }}
+                                            </a>
+                                            <a href="#" id="cargar_archivo">
+                                                <span class="ml-3 badge bg-info">Subir nuevo archivo</span> 
+                                            </a>
+                                        {% else %}
+                                            <input type="file" class="" placeholder="" id="rsh_pdf" name="rsh_pdf" accept="application/pdf">   
+                                        {%endif%}                                 
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -148,7 +157,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row mt-3 float-right">
-                                        <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Guardar</button>
+                                        <button type="submit" id="submit_nuevo_usuario" class="btn btn-primary">Actualizar</button>
                                         <a href="{% url 'usuarios' %}" id="cancelar_editar_descuento" class="btn btn-primary ml-1">Cancelar</a>
                                     </div>
                                 </div>
@@ -188,38 +197,14 @@ $(document).ready(function(){
             }
         })
         rol_beneficiario()
+
+        $('#cargar_archivo').on('click', function (){
+            $('#carga_archivo_rsh').append('<input type="file" class="" placeholder="" id="rsh_pdf" name="rsh_pdf" accept="application/pdf">');
+            $('#cargar_archivo').hide();
+            $('#archivo_actual').hide();
+            
+        })
+        
 });
-</script>
-<script>
-    //$(function () {bsCustomFileInput.init();});
-    $("#add-photo").tooltip()//para el mesaje de subir foto
-
-    function createPreview(file) {
-    var imgCodified = URL.createObjectURL(file);
-    $("#foto").attr("src",imgCodified);
-    $("#foto").attr("class","img-fluid rounded-circle");
-}
-
-    // Abrir el inspector de archivos
-    $(document).on("click", "#add-photo", function(){
-        $("#registro_imagen").click();
-    });
-
-     // Cachamos el evento change
-    $(document).on("change", "#registro_imagen", function () {
-        console.log(this.files);
-        var files = this.files;
-        var element;
-        var supportedImages = ["image/jpeg", "image/png", "image/gif"];
-        var seEncontraronElementoNoValidos = false;
-
-        for (var i = 0; i < files.length; i++) {
-            element = files[i];
-            if (supportedImages.indexOf(element.type) != -1) {createPreview(element);}
-            else {seEncontraronElementoNoValidos = true;}
-        }
-        if (seEncontraronElementoNoValidos) {toastr.error("Archivo de imagen no valido");}
-        else {toastr.success("Archivo de imagen subido correctamente");}
-    });
 </script>
 {% endblock %}

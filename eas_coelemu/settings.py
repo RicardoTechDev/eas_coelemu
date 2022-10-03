@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-r5m%0e!$3ra1fe^$=%&g=8-fwlwtmdiq&wgb%=-*0y!(h&0=sb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []#
 
 
 # Application definition
@@ -73,11 +73,22 @@ WSGI_APPLICATION = 'eas_coelemu.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}RVbkn21*47sde5
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'eas_coelemu_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -104,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -117,6 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -134,7 +146,8 @@ EMAIL_HOST_USER = 'dideco.coelemu@outlook.com'
 EMAIL_HOST_PASSWORD = 'dideco007*'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
+#dideco.coelemu@outlook.com  dideco007*
+#vegarid@hotmail.com ricky007
 
 '''
 https://mailtrap.io/

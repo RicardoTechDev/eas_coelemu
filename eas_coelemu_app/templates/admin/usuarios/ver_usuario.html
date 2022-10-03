@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Datos usuario{% endblock %}
+
+<!-- Content Header (Page header) -->
+{% block content_header_title%}Datos {{ usuario }}{% endblock %}
+{% block content_header_actual%}<a href="{% url 'usuarios' %}">Usuarios</a> / Ver Usuario{% endblock %}
+<!-- Main content -->
+{% block content_main %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-md12">
+                <div class="card card-warning">
+                    <div class="card-header p-2">
+                        <h6>Datos usuario</h6>
+                    </div><!-- /.card-header -->
+                    <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col-md-2 mx-auto">
+                                    <!-- Imagen usuario -->
+                                    <div class="form-group text-center">
+                                        <img src="{% static 'img/usuario.png' %}"  class="img-fluid crop"  width="40%">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group mb-3">
+                                        <label for="nombres" class="col-sm-3 col-form-label">Nombres</label>
+                                        <input type="text" class="form-control" name="nombres" value="{{ usuario.nombres }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="ap_paterno" class="col-sm-3 col-form-label">Apellido paterno</label>
+                                        <input type="text" class="form-control" name="ap_paterno" value="{{ usuario.apellido_paterno }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="ap_materno" class="col-sm-3 col-form-label">Apellido materno</label>
+                                        <input type="text" class="form-control" name="ap_materno" value="{{ usuario.apellido_materno }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rut" class="col-sm-3 col-form-label">RUT</label>
+                                        <input type="text" class="form-control" name="rut" value="{{ usuario_rut }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-id-card"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="celular" class="col-sm-3 col-form-label">Celular</label>
+                                        <input type="text" class="form-control" name="celular" value="{{ usuario.celular }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-mobile"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="email" class="col-sm-3 col-form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-envelope"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rol" class="col-sm-3 col-form-label">Rol</label>
+                                        <input type="text" class="form-control" name="rol" value="{{ usuario.rol }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                </div>
+                            </div>
+                            <!--=============  USUARIO BENEFICIARIO ==================-->
+                            <div class="row mt-4" id="usuario_beneficiario" style="display:none;">
+                                <div class="col-md-2 mx-auto">
+                                    <!-- Imagen hogar -->
+                                    <div class="form-group text-center">
+                                        <img src="{% static 'img/hogar.png' %}"  class="img-fluid crop" width="30%">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mx-auto">
+                                    <div class="input-group my-3">
+                                        <h5>Registro Social de Hogares del beneficiario</h5>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_direccion" class="col-sm-3 col-form-label">Dirección</label>
+                                        <input type="text" class="form-control" name="rsh_direccion" value="{{ grupo_familiar.direccion }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="rsh_calificacion" class="col-sm-3 col-form-label">Calificación Soc. Eco. %</label>
+                                        <input type="text" class="form-control" name="rsh_calificacion" value="{{ grupo_familiar.calif_soc_eco }}" readonly>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mb-3" id="carga_archivo_rsh">
+                                        <label for="rsh_pdf" class="col-sm-3 col-form-label">RSH (archivo pdf)</label>
+                                        {% if grupo_familiar.rsh_archivo %}
+                                            <a href="/media/{{ grupo_familiar.rsh_archivo }}" id="archivo_actual" target="_blank">
+                                                {{grupo_familiar.rsh_archivo }}
+                                            </a>
+                                        {% else %}
+                                            <p>NO SE HA CARGADO ARCHIVO RSH</p>   
+                                        {%endif%}                                 
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row mt-3 float-right">
+                                        <a href="{% url 'usuarios' %}" id="cancelar_editar_descuento" class="btn btn-primary ml-1">Volver</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                </div>
+                            </div>
+                        <!-- /.card -->
+
+                    </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+                
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function(){
+        //Comprovamos si el rol del usuario es "Beneficiario" para mostrar los datos RSH
+        function rol_beneficiario(){
+            if('{{ usuario.rol.nombre }}' == "Beneficiario"){
+                $('#usuario_beneficiario').show();
+            }
+        }
+        $('#registro_rol').on('change', function (){
+            let seleccion= $(this).children("option:selected").val();
+            if(seleccion == '{{ id_rol_beneficiario }}'){
+                $('#usuario_beneficiario').show();
+            }
+            else{
+                $('#usuario_beneficiario').hide();
+            }
+        })
+        rol_beneficiario()
+});
+</script>
+{% endblock %}

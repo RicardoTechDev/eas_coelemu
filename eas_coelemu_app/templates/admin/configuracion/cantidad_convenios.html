@@ -11,7 +11,7 @@
         <!-- Button trigger modal -->
         <a href="{% url 'nuevoCantConvenios' %}">
             <button type="button" class="btn bg-gradient-primary">
-                <i class='fas fa-dollar-sign'></i>
+                <i class='fas fa-plus'></i>
                 Nueva Cantidad
             </button>
         </a>
@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-2">
                                     <ul>
-                                        <li><h4>Fecha    : {{ cant_convenios.updated_at }}</h4></li>
+                                        <li><h4>Fecha    : {{ cant_convenios.updated_at}}</h4></li>
                                         <li><h4>Cantidad : {{ cant_convenios.cantidad_convenios }}</h4></li>
                                         <li><h4>Usuario  : {{ cant_convenios.usuario }}</h4></li>
                                     </ul>

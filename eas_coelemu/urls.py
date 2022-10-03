@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', include('eas_coelemu_app.urls')),
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
 ]
 
+#handler404 = "eas_coelemu_app.views.error404"
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -23,14 +23,14 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                <h3>150</h3>
+                <h3>{{ solicitudes }}</h3>
 
-                <p>New Orders</p>
+                <p>Solicitudes</p>
                 </div>
                 <div class="icon">
-                <i class="ion ion-bag"></i>
+                <i class="fas fa-file-invoice"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'solicitudes' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -38,14 +38,13 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Bounce Rate</p>
+                <h3>{{ convenios }}<sup style="font-size: 20px"></sup></h3>
+                <p>Convenios entregados</p>
                 </div>
                 <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                    <i class="fas fa-file-invoice-dollar"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'convenios' %}" class="small-box-footer">Más información<i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -85,64 +84,7 @@
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
-            <!-- Left col -->
-            <section class="col-lg-6 connectedSortable">
-                <!-- card -->
-                <div class="card">
-                    <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
-                        Título
-                    </h3>
-                    <div class="card-tools">
-                        <ul class="nav nav-pills ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
-                        </li>
-                        </ul>
-                    </div>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                    <div class="tab-content p-0">
-                        Hola!! esta es la columna de la izquierda.
-                    </div>
-                    </div><!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </section>
-            <!-- /.Left col -->
-            <!-- right col (We are only adding the ID to make the widgets sortable)-->
-            <section class="col-lg-6 connectedSortable">
-                <!-- card -->
-                <div class="card">
-                    <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
-                        Título
-                    </h3>
-                    <div class="card-tools">
-                        <ul class="nav nav-pills ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
-                        </li>
-                        </ul>
-                    </div>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                    <div class="tab-content p-0">
-                        Hola!! esta es la columna de la derecha.
-                    </div>
-                    </div><!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </section>
-            <!-- right col -->
+            <img src="{% static 'img/gas_mas_basrato.jpg' %}" alt="" width="100%">
         </div>
         <!-- /.row (main row) -->
 

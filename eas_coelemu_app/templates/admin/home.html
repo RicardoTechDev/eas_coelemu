@@ -22,14 +22,14 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                <h3>150</h3>
+                <h3>{{ solicitudes }}</h3>
 
-                <p>New Orders</p>
+                <p>Solicitudes</p>
                 </div>
                 <div class="icon">
-                <i class="ion ion-bag"></i>
+                <i class="fas fa-file-invoice"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'solicitudes' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -37,14 +37,14 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
+                <h3>{{ convenios }}<sup style="font-size: 20px"></sup></h3>
 
-                <p>Bounce Rate</p>
+                <p>Convenios entregados</p>
                 </div>
                 <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                    <i class="fas fa-file-invoice-dollar"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'convenios' %}" class="small-box-footer">Más información<i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -61,7 +61,7 @@
                         <i class="ion ion-person-add"></i>
                     </div>
                 </a>
-                <a href="{% url 'usuarios' %}" class="small-box-footer">Más información<i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'usuarios' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -71,12 +71,12 @@
                 <div class="inner">
                 <h3 id="precio_gas">$ </h3>
 
-                <p>Precio del gas actualizado el {{ precio_gas.updated_at }}</p>
+                <p>Actualizado el {{ precio_gas.updated_at }}</p>
                 </div>
                 <div class="icon">
                 <i class="ion ion-pie-graph"></i>
                 </div>
-                <a href="{% url 'precioGas' %}" class="small-box-footer">Más información<i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{% url 'precioGas' %}" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
@@ -84,7 +84,7 @@
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
-                    <img src="{% static 'img/gas_mas_basrato.jpg' %}" alt="" width="100%">
+            <img src="{% static 'img/gas_mas_basrato.jpg' %}" alt="" width="100%">
             
         </div>
         <!-- /.row (main row) -->

@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block titulo %}Cambiar Contraseña{% endblock %}
-{% block css %}
-<link rel="stylesheet" href="{% static 'css/password-strength.scss' %}">
-{% endblock %}
 <!-- Content Header (Page header) -->
 {% block content_header_title%}Mi Perfil{% endblock %}
 {% block content_header_actual%}<a href="{% url 'miPerfil' request.session.usuario.id %}">Mi Perfil</a>  / Cambiar Contraseña{% endblock %}
@@ -42,38 +39,41 @@
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="contrasena_nueva" class="col-sm-3 col-form-label">Nueva Contraseña</label>
-                                        <input type="password" class="form-control" placeholder="Contraseña nueva" id="contrasena_nueva" name="contrasena_nueva">
+                                        <input type="password" class="form-control" placeholder="Contraseña nueva" id="contrasena_nueva" name="contrasena_nueva" onkeyup="return validate()">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="password-strength_container"></div>
-                                    <ul>
-                                        <li data-contains="8-chars">
-                                            Al menos 8 carácteres.
-                                        </li>
-                                        <li data-contains="upper-lower-and-num">
-                                            Debe contener al menos una letra en mayúscula, una en minúscula, y un
-                                            número.
-                                        </li>
-                                        <li data-contains="special-chars">
-                                            Puede contener carácteres especiales.
-                                        </li>
-                                </ul>
                                     <div class="input-group mb-3">
                                         <label for="contrasena_confirmacion" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
-                                        <input type="password" class="form-control" placeholder="Confirmación contraseña" id="contrasena_confirmacion" name="contrasena_confirmacion">
+                                        <input type="password" class="form-control" placeholder="Confirmación contraseña" id="contrasena_confirmacion" name="contrasena_confirmacion" onkeyup="return samePasswords()">
                                         <div class="input-group-append">
                                             <div class="input-group-text">
                                             <span class="fas fa-user"></span>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="input-group">
+                                        <p class="col-sm-3"></p>
+                                        <div class="p-0 mb-2 bg-danger text-white text-center" id="same" style="display:none; width:50%;">Las contraseñas no son iguales</div>
+                                        <div class="p-0 mb-2 bg-success text-white text-center" id="same_segura" style="display:none; width:50%;">Contraseña segura</div>
+                                    </div>
+                                    <div class="input-group mt-5">
+                                        <p>La contraseña debe contener:</p>
+                                        <ul>
+                                            <li id="length">Al menos 6 carácteres y no más de 8.</li>
+                                            <li id="upper">Al menos una letra mayúscula.</li>
+                                            <li id="lower">Al menos una letra minúscula.</li>   
+                                            <li id="number">Al menos un número.</li>
+                                            <li id="special_char">Al menos un carácter especial.</li>
+                                        </ul>
+                                        <input type="hidden" id="contrasena_segura" name="contrasena_segura" class="form-control" value="0" > 
+                                    </div>
                                     <div class="row mt-3 float-right">
-                                        <button type="submit" id="submit_editar_perfil" class="btn btn-primary">Guardar</button>
-                                        <a href="{% url 'miPerfil' request.session.usuario.id %}" id="cancelar_editar_perfil" class="btn btn-primary ml-1">
+                                        <button type="submit" id="submit_cambiar_contrasena" class="btn btn-primary">Guardar</button>
+                                        <a href="{% url 'miPerfil' request.session.usuario.id %}" id="cancelar_cambiar_contrasena" class="btn btn-primary ml-1">
                                             Cancelar
                                         </a>
                                     </div>
@@ -97,35 +97,86 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    //$(function () {bsCustomFileInput.init();});
-    $("#add-photo").tooltip()//para el mesaje de subir foto
+    var segura = "";
+    function validate(){
+        var pass = document.getElementById('contrasena_nueva');
+        var contrasena_segura = document.getElementById('contrasena_segura');
+        var len = document.getElementById('length');
+        var upper = document.getElementById('upper');
+        var lower = document.getElementById('lower');
+        var number = document.getElementById('number');
+        var special_char = document.getElementById('special_char');
 
-    function createPreview(file) {
-    var imgCodified = URL.createObjectURL(file);
-    $("#foto").attr("src",imgCodified);
-    $("#foto").attr("class","img-fluid rounded-circle");
-}
-
-    // Abrir el inspector de archivos
-    $(document).on("click", "#add-photo", function(){
-        $("#editar_imagen").click();
-    });
-
-     // Cachamos el evento change
-    $(document).on("change", "#editar_imagen", function () {
-        console.log(this.files);
-        var files = this.files;
-        var element;
-        var supportedImages = ["image/jpeg", "image/png", "image/gif"];
-        var seEncontraronElementoNoValidos = false;
-
-        for (var i = 0; i < files.length; i++) {
-            element = files[i];
-            if (supportedImages.indexOf(element.type) != -1) {createPreview(element);}
-            else {seEncontraronElementoNoValidos = true;}
+        //Check if pass value length
+        if(pass.value.length >= 6 && pass.value.length <= 8 ){
+            len.style.color = 'green';
         }
-        if (seEncontraronElementoNoValidos) {toastr.error("Archivo de imagen no valido");}
-        else {toastr.success("Archivo de imagen subido correctamente");}
-    });
+        else{
+            len.style.color = 'red';
+        }
+        //Check if pass value contain uppercase
+        if(pass.value.match(/[A-Z]/)){
+            upper.style.color = 'green';
+        }
+        else{
+            upper.style.color = 'red';
+        }
+        //Check if pass value contain lowercase
+        if(pass.value.match(/[a-z]/)){
+            lower.style.color = 'green';
+        }
+        else{
+            lower.style.color = 'red';
+        }
+        //Check if pass value contain number
+        if(pass.value.match(/[0-9]/)){
+            number.style.color = 'green';
+        }
+        else{
+            number.style.color = 'red';
+        }
+        //Check if pass value contain special symbols
+        if(pass.value.match(/[!\@\#\$\%\&\*\(/)\_\-\+\=\?\<\>\.\,\~]/)){
+            special_char.style.color = 'green';
+        }
+        else{
+            special_char.style.color = 'red';
+        }
+        if(pass.value.length >= 6 
+        && pass.value.length <= 8 
+        && pass.value.match(/[A-Z]/)  
+        &&pass.value.match(/[a-z]/) 
+        && pass.value.match(/[0-9]/) 
+        && pass.value.match(/[!\@\#\$\%\&\*\(/)\_\-\+\=\?\<\>\.\,\~]/)){
+            segura = 5;
+            contrasena_segura.value = "segura";
+        }
+        else{
+            segura = 0;
+            contrasena_segura.value = "no_segura";
+        }
+        
+    }
+
+    function samePasswords(){
+        var pass1 = document.getElementById('contrasena_nueva');
+        var pass2 = document.getElementById('contrasena_confirmacion');
+        var same = document.getElementById('same');
+        var same_segura = document.getElementById('same_segura');
+
+        if(pass1.value == pass2.value){
+            same.style.display="none";
+        }
+        else{
+            same.style.display="block";
+        }
+
+        if(segura == 5 && pass1.value == pass2.value){
+            same_segura.style.display="block";
+        }
+        else{
+            same_segura.style.display="none";
+        }
+    }
 </script>
 {% endblock %}
