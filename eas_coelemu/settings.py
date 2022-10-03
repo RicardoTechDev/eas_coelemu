@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',#heroku
 ]
 
 ROOT_URLCONF = 'eas_coelemu.urls'
@@ -127,7 +129,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')#heroku
+STATIC_TMP = os.path.join(BASE_DIR, 'static')#heroku
 STATIC_URL = 'static/'
+
+os.makedirs(STATIC_TMP, exist_ok=True)#heroku
+os.makedirs(STATIC_ROOT, exist_ok=True)#heroku
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'STATIC'),)#heroku
 
 
 # Default primary key field type
@@ -156,3 +165,5 @@ EMAIL_HOST_USER = '872108332c9c7d'
 EMAIL_HOST_PASSWORD = 'b20c5da347f9c3'
 EMAIL_PORT = '2525'
 '''
+
+STATICFILES_STORAGE = 'whitwnoise.storage.CompressedManifestStaticFilesStorage'#heroku

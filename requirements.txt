@@ -23,6 +23,7 @@ djangorestframework==3.13.1
 drf-yasg==1.21.3
 executing==0.8.3
 future==0.18.2
+gunicorn==20.1.0
 h11==0.14.0
 html5lib==1.1
 idna==3.3
@@ -79,6 +80,7 @@ uritools==4.0.0
 urllib3==1.26.9
 wcwidth==0.2.5
 webencodings==0.5.1
+whitenoise==6.2.0
 windows-curses==2.3.0
 wsproto==1.2.0
 xhtml2pdf==0.2.8
