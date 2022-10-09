@@ -147,8 +147,7 @@ EMAIL_HOST_USER = 'dideco.coelemu@outlook.com'
 EMAIL_HOST_PASSWORD = 'dideco007*'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-#dideco.coelemu@outlook.com  dideco007*
-#vegarid@hotmail.com ricky007
+
 
 '''
 https://mailtrap.io/

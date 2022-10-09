@@ -35,6 +35,7 @@ import datetime
 import re
 
 
+
 def config(request):
     usuario = ''
 
