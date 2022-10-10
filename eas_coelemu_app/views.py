@@ -1686,7 +1686,7 @@ def informeCantConvenios(request):
 
 
 
-def error404(request):
+def error404(request, exception=None):
     return render(request, '404.html')
 
 
