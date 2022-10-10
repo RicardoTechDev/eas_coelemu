@@ -184,7 +184,7 @@ def home(request):
         context = {
                     'usuarios' : Usuario.objects.all(),
                     'cant_usuarios' : Usuario.objects.all().count(),
-                    'precio_gas' : PrecioGas.objects.filter(estado=1),
+                    'precio_gas' : PrecioGas.objects.get(estado=1),
                     'convenios' : Convenio.objects.all().count(),
                     'solicitudes': Solicitud.objects.all().count(),
                     }
@@ -194,7 +194,7 @@ def home(request):
         context = {
                     'beneficiarios' : Beneficiario.objects.all(),
                     'cant_beneficiarios' : Beneficiario.objects.all().count(),
-                    'precio_gas' : PrecioGas.objects.filter(estado=1),
+                    'precio_gas' : PrecioGas.objects.get(estado=1),
                     'convenios' : Convenio.objects.all().count(),
                     'solicitudes': Solicitud.objects.all().count(),
                     }
@@ -204,7 +204,7 @@ def home(request):
         context = {
                     'beneficiarios' : Beneficiario.objects.all(),
                     'cant_beneficiarios' : Beneficiario.objects.all().count(),
-                    'precio_gas' : PrecioGas.objects.filter(estado=1),
+                    'precio_gas' : PrecioGas.objects.get(estado=1),
                     'convenios' : Convenio.objects.all().count(),
                     'solicitudes': Solicitud.objects.all().count(),
                 }
@@ -271,6 +271,8 @@ def nuevoUsuario(request):
         request.session['registro_celular'] = request.POST['registro_celular']
         request.session['registro_email'] = request.POST['registro_email']
         request.session['registro_rol'] = request.POST['registro_rol']
+        request.session['rsh_calificacion'] = request.POST['rsh_calificacion']
+        request.session['rsh_direccion'] = request.POST['rsh_direccion']
     
         if len(errors) > 0:
             for key, value in errors.items():
@@ -314,9 +316,6 @@ def nuevoUsuario(request):
                 if len(errors) > 0:
                     for key, value in errors.items():
                         messages.error(request, value)
-                    #Variables de session para guardar los datos en caso de error el usuario no tenga que escribir todo
-                    request.session['rsh_calificacion'] = request.POST['rsh_calificacion']
-                    request.session['rsh_direccion'] = request.POST['rsh_direccion']
                     return redirect(nuevoUsuario)
                 
                 else:
@@ -363,12 +362,10 @@ def delVaSessionUsuarios(request):
     del request.session['registro_rut']
     del request.session['registro_celular']
     del request.session['registro_email']
-    if request.session['rsh_calificacion']:
-        del request.session['rsh_calificacion']
-    if request.session['rsh_direccion']:
-        del request.session['rsh_direccion']
-    if request.session['registro_rol']:
-        del request.session['registro_rol']
+    del request.session['registro_rol']
+    del request.session['rsh_calificacion']
+    del request.session['rsh_direccion']
+    
 
 
 
@@ -809,7 +806,7 @@ def cambiarContrasena(request, id_user):
 
 @loginRequired
 def precioGas(request):
-    precio = PrecioGas.objects.filter(estado=1)
+    precio = PrecioGas.objects.get(estado=1)
     context = {
                 'precio_gas' : precio,     
         }
@@ -960,7 +957,7 @@ def eliminarDescuento(request, id_descuento):
 
 @loginRequired
 def cantConvenios(request):
-    cant_convenios = CantidadConvenio.objects.filter(estado=1)
+    cant_convenios = CantidadConvenio.objects.get(estado=1)
     context = {
             'cant_convenios' : cant_convenios,     
     }
@@ -977,7 +974,7 @@ def nuevoCantConvenios(request):
     cantidad_actual = 0
     if request.method == 'GET':
         if(CantidadConvenio.objects.all()):
-            cantidad_actual = CantidadConvenio.objects.filter(estado=1)
+            cantidad_actual = CantidadConvenio.objects.get(estado=1)
 
         context = {
                 'fecha': datetime.date.today(),
