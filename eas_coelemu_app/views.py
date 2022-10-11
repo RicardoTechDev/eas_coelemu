@@ -358,15 +358,7 @@ def nuevoUsuario(request):
 
 
 def delVaSessionUsuarios(request):
-    del request.session['registro_nombres']
-    del request.session['registro_ap_paterno']
-    del request.session['registro_ap_materno']
-    del request.session['registro_rut']
-    del request.session['registro_celular']
-    del request.session['registro_email']
-    del request.session['registro_rol']
-    del request.session['rsh_calificacion']
-    del request.session['rsh_direccion']
+
     
 
 
