@@ -117,6 +117,8 @@ def config(request):
         return render(request, 'admin/register.html',)
 
 
+
+
 def login(request):
     errors = {}
 
@@ -163,6 +165,7 @@ def login(request):
             return redirect("home")
 
         return render(request, 'index.html')
+
 
 
 
@@ -1806,7 +1809,7 @@ def sendCambioEstadoSolicitud(user, nuevo_estado, fecha_solicitud):
                                     [user.email],#destinatarios
                                     #CC=[], se puede definir con copia a 
                                 )
-    email.attach_alternative(content, 'text/html')#agregar el contenido al correo
+    email.attach_alternative(content, 'text/html')#agregar el contenido al correo, en plantillas correo
     email.send()
 
 
