@@ -379,7 +379,6 @@ def delVaSessionIntegrante(request):
 
 def cambiarEstadoUsuario(request, id_user):
     usuario = Usuario.objects.get(id=id_user)
-
     if usuario.estado == 1:
         usuario.estado = 0
         usuario.save()
@@ -491,7 +490,7 @@ def editarUsuario(request, id_user):
                 return redirect(editarUsuario,id_user)
 
             #comprobar si tenia un beneficiario
-            if  Beneficiario.objects.get(usuario=usuario.id):
+            if  Beneficiario.objects.filter(usuario=usuario.id):
                 #si lo tenia editamos el grupo familiar asociado al beneficiario asociado al usuario
                 beneficiario = Beneficiario.objects.get(usuario=usuario.id)
                 grupo_familiar = GrupoFamiliar.objects.get(id=beneficiario.grupo_familiar.id)
